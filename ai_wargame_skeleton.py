@@ -347,16 +347,21 @@ class Game:
                     coords.dst.row > coords.src.row + 1 or coords.dst.col > coords.src.col + 1):
                 return False
 
-        if unit.player is Player.Attacker and (self.board[coords.src.row + 1][coords.src.col] is Player.Defender or
-                self.board[coords.src.row][coords.src.col + 1] is Player.Defender or
-                self.board[coords.src.row - 1][coords.src.col] is Player.Defender or
-                self.board[coords.src.row][coords.src.col - 1] is Player.Defender):
+        down = Coord(coords.src.row + 1, coords.src.col)
+        up = Coord(coords.src.row - 1, coords.src.col)
+        right = Coord(coords.src.row, coords.src.col + 1)
+        left = Coord(coords.src.row , coords.src.col - 1)
+
+        if unit.player is Player.Attacker and (self.get(down) is unit.player.Defender or
+                                               self.get(left) is unit.player.Defender or
+                                               self.get(right) is unit.player.Defender or
+                                               self.get(left) is unit.player.Defender):
             return False
 
-        if unit.player is Player.Defender and (self.board[coords.src.row + 1][coords.src.col] is Player.Attacker or
-                self.board[coords.src.row][coords.src.col + 1] is Player.Attacker or
-                self.board[coords.src.row - 1][coords.src.col] is Player.Attacker or
-                self.board[coords.src.row][coords.src.col - 1] is Player.Attacker):
+        if unit.player is Player.Defender and (self.get(down) is unit.player.Attacker or
+                                               self.get(left) is unit.player.Attacker or
+                                               self.get(right) is unit.player.Attacker or
+                                               self.get(left) is unit.player.Attacker):
             return False
 
         unit = self.get(coords.dst)
