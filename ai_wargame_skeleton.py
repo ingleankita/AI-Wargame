@@ -333,20 +333,6 @@ class Game:
         if unit is None or unit.player != self.next_player:
             return False
 
-        # if unit at src is Attacker's AI, Firewall, and Program, it can only move up or left 1 block
-        if unit.player is Player.Attacker and (
-                unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
-            if (coords.dst.row > coords.src.row or coords.dst.col > coords.src.col or
-                    coords.dst.row < coords.src.row - 1 or coords.dst.col < coords.src.col - 1):
-                return False
-
-        # if unit at src is Defender's AI, firewall, and program, it can only move down or right 1 block
-        if unit.player is Player.Defender and (
-                unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
-            if (coords.dst.row < coords.src.row or coords.dst.col < coords.src.col or
-                    coords.dst.row > coords.src.row + 1 or coords.dst.col > coords.src.col + 1):
-                return False
-
         down = Coord(coords.src.row + 1, coords.src.col)
         up = Coord(coords.src.row - 1, coords.src.col)
         right = Coord(coords.src.row, coords.src.col + 1)
