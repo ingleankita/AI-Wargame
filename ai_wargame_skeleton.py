@@ -397,8 +397,7 @@ class Game:
                                 if self.get(coordinate) is None:
                                     continue
                                 else:
-                                    damage_amt = unit_S.damage_amount(self.get(coordinate))
-                                    self.get(coordinate).mod_health(-damage_amt)
+                                    self.get(coordinate).mod_health(-2)
                                     self.remove_dead(coordinate)
                         else:
                             return (False, "invalid move")
