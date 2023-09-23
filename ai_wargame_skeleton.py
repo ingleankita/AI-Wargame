@@ -368,7 +368,6 @@ class Game:
             return (True, "")
         else:
             if self.board[coords.dst.row][coords.dst.col]:
-                print("I am here....")
                 # attack or repair S --> T
                 unit_S = self.get(coords.src)
                 unit_T = self.get(coords.dst)
@@ -383,9 +382,6 @@ class Game:
                     damage_amt_S = unit_T.damage_amount(unit_S)
                     unit_T.mod_health(-damage_amt_T)
                     unit_S.mod_health(-damage_amt_S)
-
-                print(unit_S)
-                print(unit_T)
                 return (True, "")
             else:
                 return (False, "invalid move")
