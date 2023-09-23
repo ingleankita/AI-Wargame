@@ -333,21 +333,19 @@ class Game:
         if unit is None or unit.player != self.next_player:
             return False
 
-        down = Coord(coords.src.row + 1, coords.src.col)
-        up = Coord(coords.src.row - 1, coords.src.col)
-        right = Coord(coords.src.row, coords.src.col + 1)
-        left = Coord(coords.src.row , coords.src.col - 1)
+        adj_coords = list(coords.src.iter_adjacent())
+        print(adj_coords)
 
-        if unit.player is Player.Attacker and (self.get(down) is unit.player.Defender or
-                                               self.get(left) is unit.player.Defender or
-                                               self.get(right) is unit.player.Defender or
-                                               self.get(left) is unit.player.Defender):
+        if unit.player is Player.Attacker and (self.get(adj_coords[0]) is unit.player.Defender or
+                                               self.get(adj_coords[1]) is unit.player.Defender or
+                                               self.get(adj_coords[2]) is unit.player.Defender or
+                                               self.get(adj_coords[3]) is unit.player.Defender):
             return False
 
-        if unit.player is Player.Defender and (self.get(down) is unit.player.Attacker or
-                                               self.get(left) is unit.player.Attacker or
-                                               self.get(right) is unit.player.Attacker or
-                                               self.get(left) is unit.player.Attacker):
+        if unit.player is Player.Defender and (self.get(adj_coords[0]) is unit.player.Attacker or
+                                               self.get(adj_coords[1]) is unit.player.Attacker or
+                                               self.get(adj_coords[2]) is unit.player.Attacker or
+                                               self.get(adj_coords[3]) is unit.player.Attacker):
             return False
 
         unit = self.get(coords.dst)
