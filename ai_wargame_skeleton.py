@@ -348,14 +348,14 @@ class Game:
                                                self.get(adj_coords[2]) is unit.player.Defender or
                                                self.get(adj_coords[3]) is unit.player.Defender):
             return False
-
-        if unit.player is Player.Defender and (self.get(adj_coords[0]) is unit.player.Attacker or
+        elif unit.player is Player.Defender and (self.get(adj_coords[0]) is unit.player.Attacker or
                                                self.get(adj_coords[1]) is unit.player.Attacker or
                                                self.get(adj_coords[2]) is unit.player.Attacker or
                                                self.get(adj_coords[3]) is unit.player.Attacker):
             return False
+        else:
+            unit = self.get(coords.dst)
 
-        unit = self.get(coords.dst)
         return (unit is None)
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
