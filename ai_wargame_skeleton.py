@@ -45,7 +45,6 @@ class GameType(Enum):
 
 ##############################################################################################################
 
-# @dataclass(slots=True)
 @dataclass
 class Unit:
     player: Player = Player.Attacker
@@ -107,7 +106,6 @@ class Unit:
 
 ##############################################################################################################
 
-# @dataclass(slots=True)
 @dataclass
 class Coord:
     """Representation of a game cell coordinate (row, col)."""
@@ -170,7 +168,6 @@ class Coord:
 
 ##############################################################################################################
 
-# @dataclass(slots=True)
 @dataclass
 class CoordPair:
     """Representation of a game move or a rectangular area via 2 Coords."""
@@ -224,7 +221,6 @@ class CoordPair:
 
 ##############################################################################################################
 
-# @dataclass(slots=True)
 @dataclass
 class Options:
     """Representation of the game options."""
@@ -241,7 +237,6 @@ class Options:
 
 ##############################################################################################################
 
-# @dataclass(slots=True)
 @dataclass
 class Stats:
     """Representation of the global game statistics."""
@@ -251,7 +246,6 @@ class Stats:
 
 ##############################################################################################################
 
-# @dataclass(slots=True)
 @dataclass
 class Game:
     """Representation of the game state."""
@@ -328,7 +322,20 @@ class Game:
         """Validate a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             return False
-        unit = self.get(coords.src)
+
+        unit = self.get(coords.src)  # get unit at src
+
+        # if unit at src is Attacker's AI, firewall, and program, it can only move up or left
+        if unit.player is Player.Attacker and (
+                unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
+            if coords.dst.row > coords.src.row or coords.dst.col > coords.src.col:
+                return False
+
+        # if unit at src is Defender's AI, firewall, and program, it can only move down or right
+        if unit.player is Player.Defender and (
+                unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
+            if coords.dst.row < coords.src.row or coords.dst.col < coords.src.col:
+                return False
 
         if unit is None or unit.player != self.next_player:
             return False
@@ -357,8 +364,25 @@ class Game:
             self.set(coords.dst, self.get(coords.src))
             self.set(coords.src, None)
             return (True, "")
+        else:
+            if self.board[coords.dst.row][coords.dst.col]:
+                # attack or repair S --> T
+                unit_S = self.get(coords.src)
+                unit_T = self.get(coords.dst)
 
-        return (False, "invalid move")
+                if unit_S.player == unit_T.player:
+                    # repair
+                    repair_amt = unit_S.repair_amount(unit_T)
+                    unit_T.mod_health(repair_amt)
+                else:
+                    # attack
+                    damage_amt_T = unit_S.damage_amount(unit_T)
+                    damage_amt_S = unit_T.damage_amount(unit_S)
+                    unit_T.mod_health(-damage_amt_T)
+                    unit_S.mod_health(-damage_amt_S)
+                return (True, "")
+            else:
+                return (False, "invalid move")
 
     def next_turn(self):
         """Transitions game to the next turn."""
