@@ -237,7 +237,7 @@ class Options:
 
 ##############################################################################################################
 
-@dataclass()
+@dataclass
 class Stats:
     """Representation of the global game statistics."""
     evaluations_per_depth: dict[int, int] = field(default_factory=dict)
@@ -322,6 +322,7 @@ class Game:
         """Validate a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             return False
+
         unit = self.get(coords.src)  # get unit at src
 
         # if unit at src is Attacker's AI, firewall, and program, it can only move up or left
@@ -338,7 +339,25 @@ class Game:
 
         if unit is None or unit.player != self.next_player:
             return False
-        unit = self.get(coords.dst)  # get unit at dst
+
+        down = Coord(coords.src.row + 1, coords.src.col)
+        up = Coord(coords.src.row - 1, coords.src.col)
+        right = Coord(coords.src.row, coords.src.col + 1)
+        left = Coord(coords.src.row , coords.src.col - 1)
+
+        if unit.player is Player.Attacker and (self.get(down) is unit.player.Defender or
+                                               self.get(left) is unit.player.Defender or
+                                               self.get(right) is unit.player.Defender or
+                                               self.get(left) is unit.player.Defender):
+            return False
+
+        if unit.player is Player.Defender and (self.get(down) is unit.player.Attacker or
+                                               self.get(left) is unit.player.Attacker or
+                                               self.get(right) is unit.player.Attacker or
+                                               self.get(left) is unit.player.Attacker):
+            return False
+
+        unit = self.get(coords.dst)
         return (unit is None)
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
