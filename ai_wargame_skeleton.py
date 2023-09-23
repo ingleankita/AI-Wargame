@@ -342,17 +342,18 @@ class Game:
                     coords.dst.row > coords.src.row + 1 or coords.dst.col > coords.src.col + 1):
                 return False
 
+        # unit at scr cannot be None
         if unit is None or unit.player != self.next_player:
             return False
 
+        # Check if unit is engaged in combat
         adj_coords = list(coords.src.iter_adjacent())
-        print(adj_coords)
-
         up = adj_coords[0]
         left = adj_coords[1]
         down = adj_coords[2]
         right = adj_coords[3]
 
+        ## TODO Karyenne: Missing conditions when unit is engaged in combat. Only T and V can move. AI, F and P cannot move
         if unit.player is Player.Attacker and (self.get(up) is unit.player.Defender or
                                                self.get(left) is unit.player.Defender or
                                                self.get(down) is unit.player.Defender or
@@ -381,9 +382,30 @@ class Game:
                 unit_T = self.get(coords.dst)
 
                 if unit_S.player == unit_T.player:
-                    # repair
-                    repair_amt = unit_S.repair_amount(unit_T)
-                    unit_T.mod_health(repair_amt)
+                    # self-destruct
+                    # 1. Check if the src = dst
+                    # 2. Check if the unit belongs to the player
+                    # 3. Set unit's health = 0 and remove unit from board
+                    # 4. Define the impacted_range and imposed damage to all unit in impacted_range
+                    if coords.src == coords.dst:
+                        if unit_S.player == self.next_player:
+                            unit_S.health = 0
+                            self.remove_dead(coords.src)
+                            impacted_range = list(coords.src.iter_range(1))
+                            print(impacted_range)
+                            for coordinate in impacted_range:
+                                if self.get(coordinate) is None:
+                                    continue
+                                else:
+                                    damage_amt = unit_S.damage_amount(self.get(coordinate))
+                                    self.get(coordinate).mod_health(-damage_amt)
+                                    self.remove_dead(coordinate)
+                        else:
+                            return (False, "invalid move")
+                    else:
+                        # repair
+                        repair_amt = unit_S.repair_amount(unit_T)
+                        unit_T.mod_health(repair_amt)
                 else:
                     # attack
                     damage_amt_T = unit_S.damage_amount(unit_T)
