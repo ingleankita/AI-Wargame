@@ -331,13 +331,15 @@ class Game:
         # if unit at src is Attacker's AI, firewall, and program, it can only move up or left
         if unit.player is Player.Attacker and (
                 unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
-            if coords.dst.row > coords.src.row or coords.dst.col > coords.src.col:
+            if (coords.dst.row > coords.src.row or coords.dst.col > coords.src.col or
+                    coords.dst.row < coords.src.row - 1 or coords.dst.col < coords.src.col - 1):
                 return False
 
         # if unit at src is Defender's AI, firewall, and program, it can only move down or right
         if unit.player is Player.Defender and (
                 unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
-            if coords.dst.row < coords.src.row or coords.dst.col < coords.src.col:
+            if (coords.dst.row < coords.src.row or coords.dst.col < coords.src.col or
+                    coords.dst.row > coords.src.row + 1 or coords.dst.col > coords.src.col + 1):
                 return False
 
         if unit is None or unit.player != self.next_player:
@@ -346,10 +348,15 @@ class Game:
         adj_coords = list(coords.src.iter_adjacent())
         print(adj_coords)
 
-        if unit.player is Player.Attacker and (self.get(adj_coords[0]) is unit.player.Defender or
-                                               self.get(adj_coords[1]) is unit.player.Defender or
-                                               self.get(adj_coords[2]) is unit.player.Defender or
-                                               self.get(adj_coords[3]) is unit.player.Defender):
+        up = adj_coords[0]
+        left = adj_coords[1]
+        down = adj_coords[2]
+        right = adj_coords[3]
+
+        if unit.player is Player.Attacker and (self.get(up) is unit.player.Defender or
+                                               self.get(left) is unit.player.Defender or
+                                               self.get(down) is unit.player.Defender or
+                                               self.get(right) is unit.player.Defender):
             return False
         elif unit.player is Player.Defender and (self.get(adj_coords[0]) is unit.player.Attacker or
                                                self.get(adj_coords[1]) is unit.player.Attacker or
