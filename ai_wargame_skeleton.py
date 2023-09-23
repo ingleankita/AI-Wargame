@@ -320,6 +320,9 @@ class Game:
 
     def is_valid_move(self, coords: CoordPair) -> bool:
         """Validate a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
+        if not self.board[coords.src.row][coords.src.col]:
+            return False
+
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             return False
 
@@ -355,14 +358,14 @@ class Game:
                                                self.get(down) is unit.player.Defender or
                                                self.get(right) is unit.player.Defender):
             return False
-
-        if unit.player is Player.Defender and (self.get(up) is unit.player.Attacker or
+        elif unit.player is Player.Defender and (self.get(up) is unit.player.Attacker or
                                                self.get(left) is unit.player.Attacker or
                                                self.get(down) is unit.player.Attacker or
                                                self.get(right) is unit.player.Attacker):
             return False
+        else:
+            unit = self.get(coords.dst)
 
-        unit = self.get(coords.dst)
         return (unit is None)
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
