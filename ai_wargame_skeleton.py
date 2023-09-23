@@ -237,7 +237,7 @@ class Options:
 
 ##############################################################################################################
 
-@dataclass
+@dataclass()
 class Stats:
     """Representation of the global game statistics."""
     evaluations_per_depth: dict[int, int] = field(default_factory=dict)
@@ -347,7 +347,29 @@ class Game:
             self.set(coords.dst, self.get(coords.src))
             self.set(coords.src, None)
             return (True, "")
-        return (False, "invalid move")
+        else:
+            if self.board[coords.dst.row][coords.dst.col]:
+                print("I am here....")
+                # attack or repair S --> T
+                unit_S = self.get(coords.src)
+                unit_T = self.get(coords.dst)
+
+                if unit_S.player == unit_T.player:
+                    # repair
+                    repair_amt = unit_S.repair_amount(unit_T)
+                    unit_T.mod_health(repair_amt)
+                else:
+                    # attack
+                    damage_amt_T = unit_S.damage_amount(unit_T)
+                    damage_amt_S = unit_T.damage_amount(unit_S)
+                    unit_T.mod_health(-damage_amt_T)
+                    unit_S.mod_health(-damage_amt_S)
+
+                print(unit_S)
+                print(unit_T)
+                return (True, "")
+            else:
+                return (False, "invalid move")
 
     def next_turn(self):
         """Transitions game to the next turn."""
