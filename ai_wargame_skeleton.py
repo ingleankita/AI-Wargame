@@ -358,10 +358,10 @@ class Game:
                                                self.get(down) is unit.player.Defender or
                                                self.get(right) is unit.player.Defender):
             return False
-        elif unit.player is Player.Defender and (self.get(adj_coords[0]) is unit.player.Attacker or
-                                               self.get(adj_coords[1]) is unit.player.Attacker or
-                                               self.get(adj_coords[2]) is unit.player.Attacker or
-                                               self.get(adj_coords[3]) is unit.player.Attacker):
+        elif unit.player is Player.Defender and (self.get(up) is unit.player.Attacker or
+                                               self.get(left) is unit.player.Attacker or
+                                               self.get(down) is unit.player.Attacker or
+                                               self.get(right) is unit.player.Attacker):
             return False
         else:
             unit = self.get(coords.dst)
