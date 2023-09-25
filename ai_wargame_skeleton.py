@@ -320,31 +320,6 @@ class Game:
 
     def is_valid_move(self, coords: CoordPair) -> bool:
         """Validate a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
-        if not self.board[coords.src.row][coords.src.col]:
-            return False
-
-        if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
-            return False
-
-        unit = self.get(coords.src)  # get unit at src
-
-        # if unit at src is Attacker's AI, firewall, and program, it can only move up or left
-        if unit.player is Player.Attacker and (
-                unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
-            if (coords.dst.row > coords.src.row or coords.dst.col > coords.src.col or
-                    coords.dst.row < coords.src.row - 1 or coords.dst.col < coords.src.col - 1):
-                return False
-
-        # if unit at src is Defender's AI, firewall, and program, it can only move down or right
-        if unit.player is Player.Defender and (
-                unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
-            if (coords.dst.row < coords.src.row or coords.dst.col < coords.src.col or
-                    coords.dst.row > coords.src.row + 1 or coords.dst.col > coords.src.col + 1):
-                return False
-
-        # unit at scr cannot be None
-        if unit is None or unit.player != self.next_player:
-            return False
 
         # Check if unit is engaged in combat
         adj_coords = list(coords.src.iter_adjacent())
@@ -353,67 +328,157 @@ class Game:
         down = adj_coords[2]
         right = adj_coords[3]
 
-        ## TODO Karyenne: Missing conditions when unit is engaged in combat. Only T and V can move. AI, F and P cannot move
-        if unit.player is Player.Attacker and (self.get(up) is unit.player.Defender or
-                                               self.get(left) is unit.player.Defender or
-                                               self.get(down) is unit.player.Defender or
-                                               self.get(right) is unit.player.Defender):
-            return False
-        elif unit.player is Player.Defender and (self.get(up) is unit.player.Attacker or
-                                               self.get(left) is unit.player.Attacker or
-                                               self.get(down) is unit.player.Attacker or
-                                               self.get(right) is unit.player.Attacker):
-            return False
-        else:
-            unit = self.get(coords.dst)
+        # Get unit at src
+        unit = self.get(coords.src)
 
-        return (unit is None)
+        if not self.board[coords.src.row][coords.src.col]:
+            return False
+
+        # Validate if there CoordPair is within the board dimension
+        if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
+            return False
+
+        # Player cannot pick up unit at src if unit is None
+        if unit is None:
+            print("line 343")
+            return False
+        # If unit at src is not None, user can only pick up units belong to them
+        elif unit.player == self.next_player:
+            # if unit at src is Attacker's:
+            if unit.player is Player.Attacker:
+                # Check if the unit type is AI, firewall, and program, then it can only move up or left by 1 block
+                if (unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
+                    if (coords.dst.row > coords.src.row or coords.dst.col > coords.src.col or
+                        coords.dst.row < coords.src.row - 1 or coords.dst.col < coords.src.col - 1):
+                        print("line 353")
+                        return False
+                    else:
+                        # Check if there are any adversarial units adjacent. If yes, AI, F and P cannot move - V and T can move freely.
+                        scan_adjacent = []
+                        for coordinate in adj_coords:
+                            if self.get(coordinate) == None:
+                                scan_adjacent.append("")
+                            elif self.get(coordinate).to_string()[:1] == "d":
+                                scan_adjacent.append("d")
+                            else:
+                                scan_adjacent.append("a")
+
+                        if "d" in scan_adjacent:
+                            if self.get(coords.dst) is None:
+                                print("line 362")
+                                return False
+                            else:
+                                print("line 365")
+                                return True
+                        else:
+                            print("line 368")
+                            return True  # return True since self-destruction is allowed
+                else:
+                    # If the unit type is V or T, it can only move to adjacent dst
+                        # If dst is empty, unit can move
+                        # If dst is occupied, it can also move, but the move is counted as repair or attack
+                    print("line 374")
+                    return (coords.dst in adj_coords)
+
+            # if unit at src is Defender's:
+            if unit.player is Player.Defender:
+                # Check if unit type is AI, firewall, and program, it can only move down or right by 1 block
+                if (unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
+                    if (coords.dst.row < coords.src.row or coords.dst.col < coords.src.col or
+                        coords.dst.row > coords.src.row + 1 or coords.dst.col > coords.src.col + 1):
+                        print("line 383")
+                        return False
+                    else:
+                        # Check if there are any adversarial units adjacent. If yes, AI, F and P cannot move - V and T can move freely.
+                        scan_adjacent = []
+                        for coordinate in adj_coords:
+                            if self.get(coordinate) == None:
+                                scan_adjacent.append("")
+                            elif self.get(coordinate).to_string()[:1] == "d":
+                                scan_adjacent.append("d")
+                            else:
+                                scan_adjacent.append("a")
+
+                        if "a" in scan_adjacent:
+                            if self.get(coords.dst) is None:
+                                print("line 392")
+                                return False
+                            else:
+                                print("line 395")
+                                return True
+                        else:
+                            print("line 398")
+                            return True  # return True since self-destruction is allowed
+                else:
+                    # If the unit type is V or T, it can only move to adjacent dst
+                        # If dst is empty, it can move
+                        # If dst is occupied, it can move but the move count as repair or attack
+                    print("line 404")
+                    return (coords.dst in adj_coords)
+        # If unit at src is not None & user cannot pick up units that does not belong to them
+        else:
+            print("line 408")
+            return False
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
         """Validate and perform a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
         if self.is_valid_move(coords):
-            self.set(coords.dst, self.get(coords.src))
-            self.set(coords.src, None)
-            return (True, "")
-        else:
-            if self.board[coords.dst.row][coords.dst.col]:
-                # attack or repair S --> T
-                unit_S = self.get(coords.src)
-                unit_T = self.get(coords.dst)
 
-                if unit_S.player == unit_T.player:
-                    # self-destruct
-                    # 1. Check if the src = dst
-                    # 2. Check if the unit belongs to the player
-                    # 3. Set unit's health = 0 and remove unit from board
-                    # 4. Define the impacted_range and imposed damage to all unit in impacted_range
-                    if coords.src == coords.dst:
-                        if unit_S.player == self.next_player:
-                            unit_S.health = 0
-                            self.remove_dead(coords.src)
-                            impacted_range = list(coords.src.iter_range(1))
-                            print(impacted_range)
-                            for coordinate in impacted_range:
-                                if self.get(coordinate) is None:
-                                    continue
-                                else:
-                                    self.get(coordinate).mod_health(-2)
-                                    self.remove_dead(coordinate)
+            unit_S = self.get(coords.src)
+            unit_T = self.get(coords.dst)
+
+            # ordinary move:
+            if unit_T is None:
+                self.set(coords.dst, self.get(coords.src))
+                self.set(coords.src, None)
+                print("line 422")
+                return (True, "")
+            # self-destruct OR repair
+            elif unit_S.player == unit_T.player:
+                # self-destruct
+                # 1. Check if the src = dst
+                # 3. Set unit's health = 0 and remove unit from board
+                # 4. Define the impacted_range and inflict damage to all unit in impacted_range
+                if coords.src == coords.dst:
+                    unit_S.health = 0
+                    self.remove_dead(coords.src)
+                    impacted_range = list(coords.src.iter_range(1))
+                    for coordinate in impacted_range:
+                        if self.get(coordinate) is None:
+                            continue
                         else:
-                            return (False, "invalid move")
-                    else:
-                        # repair
+                            self.get(coordinate).mod_health(-2)
+                            self.remove_dead(coordinate)
+                    print("line 441")
+                    return (True, "")
+                # repair
+                # 1. If T's health is already 9, Return false, "invalid move" -> retry
+                # 2. Find repair amount from table and add repair unit_T
+                else:
+                    if unit_T.health < 9:
                         repair_amt = unit_S.repair_amount(unit_T)
                         unit_T.mod_health(repair_amt)
-                else:
-                    # attack
-                    damage_amt_T = unit_S.damage_amount(unit_T)
-                    damage_amt_S = unit_T.damage_amount(unit_S)
-                    unit_T.mod_health(-damage_amt_T)
-                    unit_S.mod_health(-damage_amt_S)
-                return (True, "")
+                        print("line 450")
+                        return (True, "")
+                    else:
+                        print("line 453")
+                        return (False, "invalid move")
+            # attack
+            # 1. Find damage amount inflicted by each unit
+            # 2. Perfom bi-directional attack on both units
+            # 3. After attack, if any unit's health <= 0, remove it from table
             else:
-                return (False, "invalid move")
+                damage_amt_T = unit_S.damage_amount(unit_T)
+                damage_amt_S = unit_T.damage_amount(unit_S)
+                unit_T.mod_health(-damage_amt_T)
+                self.remove_dead(coords.dst)
+                unit_S.mod_health(-damage_amt_S)
+                self.remove_dead(coords.src)
+                print("line 466")
+                return (True, "")
+        else:
+            print("line 469")
+            return (False, "invalid move")
 
     def next_turn(self):
         """Transitions game to the next turn."""
