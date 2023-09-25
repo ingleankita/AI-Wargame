@@ -6,4 +6,4 @@ The objective of this project is to program an AI Wargame where it can be played
 ## Team members
 - Karyenne Vuong @karyennevu
 - Ankita Ingle @ingleankita
-- Doan Bao Ngan Le @
+- Doan Bao Ngan Le @purpowl
