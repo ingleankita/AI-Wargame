@@ -422,6 +422,10 @@ class Game:
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
         """Validate and perform a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
+
+        row_src = coords.src.row_string()
+        row_dst = coords.dst.row_string()
+
         if self.is_valid_move(coords):
 
             unit_S = self.get(coords.src)
@@ -432,7 +436,10 @@ class Game:
                 self.set(coords.dst, self.get(coords.src))
                 self.set(coords.src, None)
                 print("line 422")
-                return (True, "")
+                if self.next_player == Player.Attacker:
+                    return (True, "move from {}{} to {}{}".format(row_src, coords.src.col, row_dst, coords.dst.col))
+                else:
+                    return True, ("move from {}{} to {}{}".format(row_src, coords.src.col, row_dst, coords.dst.col))
             # self-destruct OR repair
             elif unit_S.player == unit_T.player:
                 # self-destruct
@@ -440,6 +447,7 @@ class Game:
                 # 3. Set unit's health = 0 and remove unit from board
                 # 4. Define the impacted_range and inflict damage to all unit in impacted_range
                 if coords.src == coords.dst:
+                    total_dmg = 0
                     unit_S.health = 0
                     self.remove_dead(coords.src)
                     impacted_range = list(coords.src.iter_range(1))
@@ -448,9 +456,10 @@ class Game:
                             continue
                         else:
                             self.get(coordinate).mod_health(-2)
+                            total_dmg += 2
                             self.remove_dead(coordinate)
                     print("line 441")
-                    return (True, "")
+                    return (True, "self-destruct at {}{}\nself-destructed for {} total damage".format(row_src, coords.src.col, total_dmg))
                 # repair
                 # 1. If T's health is already 9, Return false, "invalid move" -> retry
                 # 2. Find repair amount from table and add repair unit_T
@@ -459,7 +468,8 @@ class Game:
                         repair_amt = unit_S.repair_amount(unit_T)
                         unit_T.mod_health(repair_amt)
                         print("line 450")
-                        return (True, "")
+                        return (True, "repair from {}{} to {}{}\nrepaired {} health points".format(row_src, coords.src.col, row_dst,
+                                                                        coords.dst.col, repair_amt))
                     else:
                         print("line 453")
                         return (False, "invalid move")
@@ -475,7 +485,8 @@ class Game:
                 unit_S.mod_health(-damage_amt_S)
                 self.remove_dead(coords.src)
                 print("line 466")
-                return (True, "")
+                return (True, "attack from {}{} to {}{}\ncombat damage: to source = {}, to target = {}".format(row_src, coords.src.col, row_dst,
+                                                                        coords.dst.col, damage_amt_S, damage_amt_T))
         else:
             print("line 469")
             return (False, "invalid move")
@@ -491,6 +502,8 @@ class Game:
         output = ""
         output += f"Next player: {self.next_player.name}\n"
         output += f"Turns played: {self.turns_played}\n"
+        #Added another output line for current the turn number
+        output += f"Turn #{self.turns_played + 1}\n"
         coord = Coord()
         output += "\n   "
         for col in range(dim):
@@ -533,19 +546,24 @@ class Game:
             else:
                 print('Invalid coordinates! Try again.')
 
-    def human_turn(self):
+    #Made this return a string now
+    def human_turn(self) -> str:
         """Human player plays a move (or get via broker)."""
+        output = ""
         if self.options.broker is not None:
             print("Getting next move with auto-retry from game broker...")
+            output += "Getting next move with auto-retry from game broker..."
             while True:
                 mv = self.get_move_from_broker()
                 if mv is not None:
                     (success, result) = self.perform_move(mv)
                     print(f"Broker {self.next_player.name}: ", end='')
+                    output += f"Broker {self.next_player.name}: "
                     print(result)
+                    output += result
                     if success:
                         self.next_turn()
-                        break
+                        return output
                 sleep(0.1)
         else:
             while True:
@@ -553,22 +571,28 @@ class Game:
                 (success, result) = self.perform_move(mv)
                 if success:
                     print(f"Player {self.next_player.name}: ", end='')
+                    output += f"Player {self.next_player.name}: "
                     print(result)
+                    output += result
                     self.next_turn()
-                    break
+                    return output
                 else:
                     print("The move is not valid! Try again.")
+                    return "The move is not valid! Try again."
 
-    def computer_turn(self) -> CoordPair | None:
+    def computer_turn(self) -> [CoordPair, str] | None:
         """Computer plays a move."""
-        mv = self.suggest_move()
+        (mv, output) = self.suggest_move()
+        file_output = output
         if mv is not None:
             (success, result) = self.perform_move(mv)
             if success:
                 print(f"Computer {self.next_player.name}: ", end='')
+                file_output += f"Computer {self.next_player.name}: "
                 print(result)
+                file_output += result
                 self.next_turn()
-        return mv
+        return (mv, file_output)
 
     def player_units(self, player: Player) -> Iterable[Tuple[Coord, Unit]]:
         """Iterates over all units belonging to a player."""
@@ -614,23 +638,34 @@ class Game:
         else:
             return (0, None, 0)
 
-    def suggest_move(self) -> CoordPair | None:
+    def suggest_move(self) -> Tuple[CoordPair, str] | None:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
+        output = ""
         start_time = datetime.now()
         (score, move, avg_depth) = self.random_move()
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score}")
+        output += f"Heuristic score: {score}"
         print(f"Average recursive depth: {avg_depth:0.1f}")
+        output += f"Average recursive depth: {avg_depth:0.1f}"
         print(f"Evals per depth: ", end='')
+        output += f"Evals per depth: "
         for k in sorted(self.stats.evaluations_per_depth.keys()):
             print(f"{k}:{self.stats.evaluations_per_depth[k]} ", end='')
+            output += f"{k}:{self.stats.evaluations_per_depth[k]}\n"
         print()
         total_evals = sum(self.stats.evaluations_per_depth.values())
+        output += f"Cumulative evals: {total_evals}"
+        for j in sorted(self.stats.evaluations_per_depth.keys()):
+            print(f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100} ", end='')
+            output +=f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100} "
         if self.stats.total_seconds > 0:
             print(f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s")
+            output += f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s"
         print(f"Elapsed time: {elapsed_seconds:0.1f}s")
-        return move
+        output += f"Elapsed time: {elapsed_seconds:0.1f}s"
+        return (move, output)
 
     def post_move_to_broker(self, move: CoordPair):
         """Send a move to the game broker."""
@@ -718,29 +753,45 @@ def main():
 
     # create a new game
     game = Game(options=options)
+    f = open("gameTrace-{}-{}-{}.txt".format(Options.alpha_beta, Options.max_time, Options.max_turns), "w")
+    print(f"Max time (seconds): {Options.max_time}", file = f)
+    print(f"Maximum number of turns: {Options.max_turns}", file = f)
+    print(f"Alpha-Beta: {Options.alpha_beta}", file = f)
+    print(f"Play mode: {game.options.game_type}", file = f)
+    print(f"Heuristic: None\n", file = f)
 
     # the main game loop
     while True:
-        print()
+        print("\n")
         print(game)
+        print(game, file = f)
+
         winner = game.has_winner()
         if winner is not None:
-            print(f"{winner.name} wins!")
+            print(f"{winner.name} wins in {game.turns_played} turns!")
+            print(f"{winner.name} wins in {game.turns_played} turns!", file = f)
             break
         if game.options.game_type == GameType.AttackerVsDefender:
-            game.human_turn()
+            result = game.human_turn()
+            print(f"{result}\n", file = f)
         elif game.options.game_type == GameType.AttackerVsComp and game.next_player == Player.Attacker:
-            game.human_turn()
+            result = game.human_turn()
+            print(f"{result}\n", file = f)
         elif game.options.game_type == GameType.CompVsDefender and game.next_player == Player.Defender:
-            game.human_turn()
+            result = game.human_turn()
+            print(f"{result}\n", file = f)
         else:
             player = game.next_player
-            move = game.computer_turn()
+            (move, result) = game.computer_turn()
+            print(f"{result}\n", file = f)
             if move is not None:
                 game.post_move_to_broker(move)
             else:
                 print("Computer doesn't know what to do!!!")
+                print("Computer doesn't know what to do!!!", file = f)
                 exit(1)
+
+    f.close()
 
 
 ##############################################################################################################
