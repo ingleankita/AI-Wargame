@@ -338,9 +338,12 @@ class Game:
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             return False
 
+        # Validate if dst is only up, down, left, or right and not diagonal
+        if (coords.dst not in adj_coords):
+            return False
+
         # Player cannot pick up unit at src if unit is None
         if unit is None:
-            print("line 343")
             return False
         # If unit at src is not None, user can only pick up units belong to them
         elif unit.player == self.next_player:
@@ -349,8 +352,7 @@ class Game:
                 # Check if the unit type is AI, firewall, and program, then it can only move up or left by 1 block
                 if (unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
                     if (coords.dst.row > coords.src.row or coords.dst.col > coords.src.col or
-                        coords.dst.row < coords.src.row - 1 or coords.dst.col < coords.src.col - 1):
-                        print("line 353")
+                            coords.dst.row < coords.src.row - 1 or coords.dst.col < coords.src.col - 1):
                         return False
                     else:
                         # Check if there are any adversarial units adjacent. If yes, AI, F and P cannot move - V and T can move freely.
@@ -365,19 +367,15 @@ class Game:
 
                         if "d" in scan_adjacent:
                             if self.get(coords.dst) is None:
-                                print("line 362")
                                 return False
                             else:
-                                print("line 365")
                                 return True
                         else:
-                            print("line 368")
                             return True  # return True since self-destruction is allowed
                 else:
                     # If the unit type is V or T, it can only move to adjacent dst
-                        # If dst is empty, unit can move
-                        # If dst is occupied, it can also move, but the move is counted as repair or attack
-                    print("line 374")
+                    # If dst is empty, unit can move
+                    # If dst is occupied, it can also move, but the move is counted as repair or attack
                     return (coords.dst in adj_coords)
 
             # if unit at src is Defender's:
@@ -385,11 +383,11 @@ class Game:
                 # Check if unit type is AI, firewall, and program, it can only move down or right by 1 block
                 if (unit.type is UnitType.AI or unit.type is UnitType.Firewall or unit.type is UnitType.Program):
                     if (coords.dst.row < coords.src.row or coords.dst.col < coords.src.col or
-                        coords.dst.row > coords.src.row + 1 or coords.dst.col > coords.src.col + 1):
-                        print("line 383")
+                            coords.dst.row > coords.src.row + 1 or coords.dst.col > coords.src.col + 1):
                         return False
                     else:
-                        # Check if there are any adversarial units adjacent. If yes, AI, F and P cannot move - V and T can move freely.
+                        # Check if there are any adversarial units adjacent. If yes, AI, F and P cannot move - V and
+                        # T can move freely.
                         scan_adjacent = []
                         for coordinate in adj_coords:
                             if self.get(coordinate) == None:
@@ -401,23 +399,18 @@ class Game:
 
                         if "a" in scan_adjacent:
                             if self.get(coords.dst) is None:
-                                print("line 392")
                                 return False
                             else:
-                                print("line 395")
                                 return True
                         else:
-                            print("line 398")
                             return True  # return True since self-destruction is allowed
                 else:
                     # If the unit type is V or T, it can only move to adjacent dst
-                        # If dst is empty, it can move
-                        # If dst is occupied, it can move but the move count as repair or attack
-                    print("line 404")
+                    # If dst is empty, it can move
+                    # If dst is occupied, it can move but the move count as repair or attack
                     return (coords.dst in adj_coords)
         # If unit at src is not None & user cannot pick up units that does not belong to them
         else:
-            print("line 408")
             return False
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
@@ -435,7 +428,6 @@ class Game:
             if unit_T is None:
                 self.set(coords.dst, self.get(coords.src))
                 self.set(coords.src, None)
-                print("line 422")
                 if self.next_player == Player.Attacker:
                     return (True, "move from {}{} to {}{}".format(row_src, coords.src.col, row_dst, coords.dst.col))
                 else:
@@ -458,8 +450,9 @@ class Game:
                             self.get(coordinate).mod_health(-2)
                             total_dmg += 2
                             self.remove_dead(coordinate)
-                    print("line 441")
-                    return (True, "self-destruct at {}{}\nself-destructed for {} total damage".format(row_src, coords.src.col, total_dmg))
+                    return (True,
+                            "self-destruct at {}{}\nself-destructed for {} total damage".format(row_src, coords.src.col,
+                                                                                                total_dmg))
                 # repair
                 # 1. If T's health is already 9, Return false, "invalid move" -> retry
                 # 2. Find repair amount from table and add repair unit_T
@@ -467,11 +460,12 @@ class Game:
                     if unit_T.health < 9:
                         repair_amt = unit_S.repair_amount(unit_T)
                         unit_T.mod_health(repair_amt)
-                        print("line 450")
-                        return (True, "repair from {}{} to {}{}\nrepaired {} health points".format(row_src, coords.src.col, row_dst,
-                                                                        coords.dst.col, repair_amt))
+                        return (True,
+                                "repair from {}{} to {}{}\nrepaired {} health points".format(row_src, coords.src.col,
+                                                                                             row_dst,
+                                                                                             coords.dst.col,
+                                                                                             repair_amt))
                     else:
-                        print("line 453")
                         return (False, "invalid move")
             # attack
             # 1. Find damage amount inflicted by each unit
@@ -484,11 +478,13 @@ class Game:
                 self.remove_dead(coords.dst)
                 unit_S.mod_health(-damage_amt_S)
                 self.remove_dead(coords.src)
-                print("line 466")
-                return (True, "attack from {}{} to {}{}\ncombat damage: to source = {}, to target = {}".format(row_src, coords.src.col, row_dst,
-                                                                        coords.dst.col, damage_amt_S, damage_amt_T))
+                return (True, "attack from {}{} to {}{}\ncombat damage: to source = {}, to target = {}".format(row_src,
+                                                                                                               coords.src.col,
+                                                                                                               row_dst,
+                                                                                                               coords.dst.col,
+                                                                                                               damage_amt_S,
+                                                                                                               damage_amt_T))
         else:
-            print("line 469")
             return (False, "invalid move")
 
     def next_turn(self):
@@ -502,7 +498,7 @@ class Game:
         output = ""
         output += f"Next player: {self.next_player.name}\n"
         output += f"Turns played: {self.turns_played}\n"
-        #Added another output line for current the turn number
+        # Added another output line for current the turn number
         output += f"Turn #{self.turns_played + 1}\n"
         coord = Coord()
         output += "\n   "
@@ -546,7 +542,7 @@ class Game:
             else:
                 print('Invalid coordinates! Try again.')
 
-    #Made this return a string now
+    # Made this return a string now
     def human_turn(self) -> str:
         """Human player plays a move (or get via broker)."""
         output = ""
@@ -659,7 +655,7 @@ class Game:
         output += f"Cumulative evals: {total_evals}"
         for j in sorted(self.stats.evaluations_per_depth.keys()):
             print(f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100} ", end='')
-            output +=f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100} "
+            output += f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100} "
         if self.stats.total_seconds > 0:
             print(f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s")
             output += f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s"
@@ -753,42 +749,49 @@ def main():
 
     # create a new game
     game = Game(options=options)
+
+    print(f"Max time (seconds): {options.max_time}")
+    print(f"Maximum number of turns: {options.max_turns}")
+    print(f"Alpha-Beta: {options.alpha_beta}")
+    print(f"Play mode: {game.options.game_type}")
+    print(f"Heuristic: None")
+
     f = open("gameTrace-{}-{}-{}.txt".format(Options.alpha_beta, Options.max_time, Options.max_turns), "w")
-    print(f"Max time (seconds): {Options.max_time}", file = f)
-    print(f"Maximum number of turns: {Options.max_turns}", file = f)
-    print(f"Alpha-Beta: {Options.alpha_beta}", file = f)
-    print(f"Play mode: {game.options.game_type}", file = f)
-    print(f"Heuristic: None\n", file = f)
+    print(f"Max time (seconds): {options.max_time}", file=f)
+    print(f"Maximum number of turns: {options.max_turns}", file=f)
+    print(f"Alpha-Beta: {options.alpha_beta}", file=f)
+    print(f"Play mode: {game.options.game_type}", file=f)
+    print(f"Heuristic: None\n", file=f)
 
     # the main game loop
     while True:
         print("\n")
         print(game)
-        print(game, file = f)
+        print(game, file=f)
 
         winner = game.has_winner()
         if winner is not None:
             print(f"{winner.name} wins in {game.turns_played} turns!")
-            print(f"{winner.name} wins in {game.turns_played} turns!", file = f)
+            print(f"{winner.name} wins in {game.turns_played} turns!", file=f)
             break
         if game.options.game_type == GameType.AttackerVsDefender:
             result = game.human_turn()
-            print(f"{result}\n", file = f)
+            print(f"{result}\n", file=f)
         elif game.options.game_type == GameType.AttackerVsComp and game.next_player == Player.Attacker:
             result = game.human_turn()
-            print(f"{result}\n", file = f)
+            print(f"{result}\n", file=f)
         elif game.options.game_type == GameType.CompVsDefender and game.next_player == Player.Defender:
             result = game.human_turn()
-            print(f"{result}\n", file = f)
+            print(f"{result}\n", file=f)
         else:
             player = game.next_player
             (move, result) = game.computer_turn()
-            print(f"{result}\n", file = f)
+            print(f"{result}\n", file=f)
             if move is not None:
                 game.post_move_to_broker(move)
             else:
                 print("Computer doesn't know what to do!!!")
-                print("Computer doesn't know what to do!!!", file = f)
+                print("Computer doesn't know what to do!!!", file=f)
                 exit(1)
 
     f.close()
