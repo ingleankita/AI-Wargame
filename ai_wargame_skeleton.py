@@ -428,10 +428,7 @@ class Game:
             if unit_T is None:
                 self.set(coords.dst, self.get(coords.src))
                 self.set(coords.src, None)
-                if self.next_player == Player.Attacker:
-                    return (True, "move from {}{} to {}{}".format(row_src, coords.src.col, row_dst, coords.dst.col))
-                else:
-                    return True, ("move from {}{} to {}{}".format(row_src, coords.src.col, row_dst, coords.dst.col))
+                return True, ("move from {}{} to {}{}".format(row_src, coords.src.col, row_dst, coords.dst.col))
             # self-destruct OR repair
             elif unit_S.player == unit_T.player:
                 # self-destruct
