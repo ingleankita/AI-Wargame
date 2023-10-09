@@ -338,8 +338,8 @@ class Game:
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             return False
 
-        # Validate if dst is only up, down, left, or right and not diagonal
-        if (coords.dst not in adj_coords):
+        # Validate if dst is only up, down, left, or right or in place and not diagonal
+        if coords.dst not in adj_coords and coords.src != coords.dst:
             return False
 
         # Player cannot pick up unit at src if unit is None
@@ -375,8 +375,8 @@ class Game:
                 else:
                     # If the unit type is V or T, it can only move to adjacent dst
                     # If dst is empty, unit can move
-                    # If dst is occupied, it can also move, but the move is counted as repair or attack
-                    return (coords.dst in adj_coords)
+                    # If dst is occupied, it can also move, but the move is counted as repair or attack or self-destruct
+                    return True
 
             # if unit at src is Defender's:
             if unit.player is Player.Defender:
@@ -407,8 +407,8 @@ class Game:
                 else:
                     # If the unit type is V or T, it can only move to adjacent dst
                     # If dst is empty, it can move
-                    # If dst is occupied, it can move but the move count as repair or attack
-                    return (coords.dst in adj_coords)
+                    # If dst is occupied, it can move but the move count as repair or attack or self-destruct
+                    return True
         # If unit at src is not None & user cannot pick up units that does not belong to them
         else:
             return False
@@ -456,12 +456,15 @@ class Game:
                 else:
                     if unit_T.health < 9:
                         repair_amt = unit_S.repair_amount(unit_T)
-                        unit_T.mod_health(repair_amt)
-                        return (True,
+                        if repair_amt > 0:
+                            unit_T.mod_health(repair_amt)
+                            return (True,
                                 "repair from {}{} to {}{}\nrepaired {} health points".format(row_src, coords.src.col,
                                                                                              row_dst,
                                                                                              coords.dst.col,
                                                                                              repair_amt))
+                        else:
+                            return (False, "invalid move")
                     else:
                         return (False, "invalid move")
             # attack
@@ -602,13 +605,12 @@ class Game:
         """Check if the game is over and returns winner"""
         if self.options.max_turns is not None and self.turns_played >= self.options.max_turns:
             return Player.Defender
-        elif self._attacker_has_ai:
+        if self._attacker_has_ai:
             if self._defender_has_ai:
                 return None
             else:
                 return Player.Attacker
-        elif self._defender_has_ai:
-            return Player.Defender
+        return Player.Defender
 
     def move_candidates(self) -> Iterable[CoordPair]:
         """Generate valid move candidates for the next player."""
