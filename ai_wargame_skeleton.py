@@ -624,17 +624,61 @@ class Game:
             move.dst = src
             yield move.clone()
 
-    def random_move(self) -> Tuple[int, CoordPair | None, float]:
-        """Returns a random move."""
+    def evaluate_heuristic(self, e=0) -> int:
+        """Evaluate heuristic value of state depending on choice of e0, e1, e2 """
+        h_value = 0
+
+        p1 = self.next_player
+        p1_unit_nb = [0,0,0,0,0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
+        for unit_info in list(self.player_units(p1)):
+            match unit_info[1].type:
+                case UnitType.AI:
+                    p1_unit_nb[0] += 1
+                case UnitType.Tech:
+                    p1_unit_nb[1] += 1
+                case UnitType.Virus:
+                    p1_unit_nb[2] += 1
+                case UnitType.Program:
+                    p1_unit_nb[3] += 1
+                case UnitType.Firewall:
+                    p1_unit_nb[4] += 1
+
+        p2 = self.next_player.next()
+        p2_unit_nb = [0, 0, 0, 0, 0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
+        for unit_info in list(self.player_units(p2)):
+            match unit_info[1].type:
+                case UnitType.AI:
+                    p2_unit_nb[0] += 1
+                case UnitType.Tech:
+                    p2_unit_nb[1] += 1
+                case UnitType.Virus:
+                    p2_unit_nb[2] += 1
+                case UnitType.Program:
+                    p2_unit_nb[3] += 1
+                case UnitType.Firewall:
+                    p2_unit_nb[4] += 1
+
+        if e == 0:
+            h_value = 3*p1_unit_nb[2] + 3*p1_unit_nb[1] + 3*p1_unit_nb[4] + 3*p1_unit_nb[3] + 9999*p1_unit_nb[0] - (3*p2_unit_nb[2] + 3*p2_unit_nb[1] + 3*p2_unit_nb[4] + 3*p2_unit_nb[3] + 9999*p2_unit_nb[0])
+        elif e == 1:
+            h_value = 0 # TODO
+        else:
+            h_value = 1 # TODO
+
+        return h_value
+
+    def random_move(self) -> Tuple[int, CoordPair | None, float]:  # return Tuple(Heuristic score, CoordPair, average_depth)
+        """Returns a random move. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
         move_candidates = list(self.move_candidates())
         random.shuffle(move_candidates)
         if len(move_candidates) > 0:
             return (0, move_candidates[0], 1)
         else:
-            return (0, None, 0)  # (Heuristic score, CoordPair, average_depth)
+            # No more move available
+            return (0, None, 0)
 
     def suggest_move(self) -> Tuple[CoordPair, str] | None:
-        """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
+        """Suggest the next move using minimax alpha beta."""
         output = ""
         start_time = datetime.now()
         (score, move, avg_depth) = self.random_move()
