@@ -631,7 +631,7 @@ class Game:
         if len(move_candidates) > 0:
             return (0, move_candidates[0], 1)
         else:
-            return (0, None, 0)
+            return (0, None, 0)  # (Heuristic score, CoordPair, average_depth)
 
     def suggest_move(self) -> Tuple[CoordPair, str] | None:
         """Suggest the next move using minimax alpha beta. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
@@ -688,10 +688,12 @@ class Game:
         headers = {'Accept': 'application/json'}
         try:
             r = requests.get(self.options.broker, headers=headers)
+            # If the status code is 200 and the JSOn response data is success
             if r.status_code == 200 and r.json()['success']:
-                data = r.json()['data']
+                data = r.json()['data']  # parse the data
                 if data is not None:
                     if data['turn'] == self.turns_played + 1:
+                        # Extract the move
                         move = CoordPair(
                             Coord(data['from']['row'], data['from']['col']),
                             Coord(data['to']['row'], data['to']['col'])
@@ -722,6 +724,8 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--game_type', type=str, default="manual", help='game type: auto|attacker|defender|manual')
+    parser.add_argument('--not_alpha_beta', action='store_false', help='adversarial search type: minimax(FALSE)|alpha_beta(TRUE)')  # action="store_true" means is that if the argument is given on the command line then a True value should be stored in the parser.
+    parser.add_argument('--max_turns', type=int, default=100, help='max number of turns')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
 
@@ -743,6 +747,10 @@ def main():
         options.max_depth = args.max_depth
     if args.max_time is not None:
         options.max_time = args.max_time
+    if args.not_alpha_beta is not None:
+        options.alpha_beta = args.not_alpha_beta
+    if args.max_turns is not None:
+       options.max_turns = args.max_turns
     if args.broker is not None:
         options.broker = args.broker
 
