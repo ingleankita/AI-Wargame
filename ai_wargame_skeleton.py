@@ -631,32 +631,30 @@ class Game:
         p1 = self.next_player
         p1_unit_nb = [0,0,0,0,0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
         for unit_info in list(self.player_units(p1)):
-            match unit_info[1].type:
-                case UnitType.AI:
-                    p1_unit_nb[0] += 1
-                case UnitType.Tech:
-                    p1_unit_nb[1] += 1
-                case UnitType.Virus:
-                    p1_unit_nb[2] += 1
-                case UnitType.Program:
-                    p1_unit_nb[3] += 1
-                case UnitType.Firewall:
-                    p1_unit_nb[4] += 1
+            if unit_info[1].type == UnitType.AI:
+                p1_unit_nb[0] += 1
+            elif unit_info[1].type == UnitType.Tech:
+                p1_unit_nb[1] += 1
+            elif unit_info[1].type == UnitType.Virus:
+                p1_unit_nb[2] += 1
+            elif unit_info[1].type == UnitType.Program:
+                p1_unit_nb[3] += 1
+            elif unit_info[1].type == UnitType.Firewall:
+                p1_unit_nb[4] += 1
 
         p2 = self.next_player.next()
         p2_unit_nb = [0, 0, 0, 0, 0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
         for unit_info in list(self.player_units(p2)):
-            match unit_info[1].type:
-                case UnitType.AI:
-                    p2_unit_nb[0] += 1
-                case UnitType.Tech:
-                    p2_unit_nb[1] += 1
-                case UnitType.Virus:
-                    p2_unit_nb[2] += 1
-                case UnitType.Program:
-                    p2_unit_nb[3] += 1
-                case UnitType.Firewall:
-                    p2_unit_nb[4] += 1
+            if unit_info[1].type == UnitType.AI:
+                p2_unit_nb[0] += 1
+            elif unit_info[1].type == UnitType.Tech:
+                p2_unit_nb[1] += 1
+            elif unit_info[1].type == UnitType.Virus:
+                p2_unit_nb[2] += 1
+            elif unit_info[1].type == UnitType.Program:
+                p2_unit_nb[3] += 1
+            elif unit_info[1].type == UnitType.Firewall:
+                p2_unit_nb[4] += 1
 
         if e == 0:
             h_value = 3*p1_unit_nb[2] + 3*p1_unit_nb[1] + 3*p1_unit_nb[4] + 3*p1_unit_nb[3] + 9999*p1_unit_nb[0] - (3*p2_unit_nb[2] + 3*p2_unit_nb[1] + 3*p2_unit_nb[4] + 3*p2_unit_nb[3] + 9999*p2_unit_nb[0])
@@ -768,8 +766,11 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--game_type', type=str, default="manual", help='game type: auto|attacker|defender|manual')
+    # To customize adversarial search type: minimax OR alpha-beta
     parser.add_argument('--not_alpha_beta', action='store_false', help='adversarial search type: minimax(FALSE)|alpha_beta(TRUE)')  # action="store_true" means is that if the argument is given on the command line then a True value should be stored in the parser.
+    # To customize max number of turn
     parser.add_argument('--max_turns', type=int, default=100, help='max number of turns')
+
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
 
