@@ -459,10 +459,11 @@ class Game:
                         if repair_amt > 0:
                             unit_T.mod_health(repair_amt)
                             return (True,
-                                "repair from {}{} to {}{}\nrepaired {} health points".format(row_src, coords.src.col,
-                                                                                             row_dst,
-                                                                                             coords.dst.col,
-                                                                                             repair_amt))
+                                    "repair from {}{} to {}{}\nrepaired {} health points".format(row_src,
+                                                                                                 coords.src.col,
+                                                                                                 row_dst,
+                                                                                                 coords.dst.col,
+                                                                                                 repair_amt))
                         else:
                             return (False, "invalid move")
                     else:
@@ -629,7 +630,7 @@ class Game:
         h_value = 0
 
         p1 = self.next_player
-        p1_unit_nb = [0,0,0,0,0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
+        p1_unit_nb = [0, 0, 0, 0, 0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
         for unit_info in list(self.player_units(p1)):
             match unit_info[1].type:
                 case UnitType.AI:
@@ -659,11 +660,13 @@ class Game:
                     p2_unit_nb[4] += 1
 
         if e == 0:
-            h_value = 3*p1_unit_nb[2] + 3*p1_unit_nb[1] + 3*p1_unit_nb[4] + 3*p1_unit_nb[3] + 9999*p1_unit_nb[0] - (3*p2_unit_nb[2] + 3*p2_unit_nb[1] + 3*p2_unit_nb[4] + 3*p2_unit_nb[3] + 9999*p2_unit_nb[0])
+            h_value = 3 * p1_unit_nb[2] + 3 * p1_unit_nb[1] + 3 * p1_unit_nb[4] + 3 * p1_unit_nb[3] + 9999 * p1_unit_nb[
+                0] - (3 * p2_unit_nb[2] + 3 * p2_unit_nb[1] + 3 * p2_unit_nb[4] + 3 * p2_unit_nb[3] + 9999 * p2_unit_nb[
+                0])
         elif e == 1:
-            h_value = 0 # TODO
+            h_value = 0  # TODO
         else:
-            h_value = 1 # TODO
+            h_value = 1  # TODO
 
         return h_value
 
@@ -677,24 +680,53 @@ class Game:
     #         # No more move available
     #         return self.evaluate_heuristic(0), None, 0
 
-    def generate_children(self) -> Iterable[CoordPair]:
-        # list containing all valid moves from the current state of the game
+    def generate_children(self) -> Iterable[Tuple[Game, CoordPair]]:  # Generates children of a node (game state)
         cells = CoordPair(Coord(0, 0), Coord(4, 4))
         for i in cells.iter_rectangle():
             for j in cells.iter_rectangle():
+                node = self.clone()
                 coords = CoordPair(i, j)
-                if self.is_valid_move(coords):
-                    yield coords
+                if node.is_valid_move(coords):
+                    node.perform_move(coords)
+                    yield node, coords
 
+    def alphabeta(self, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
 
-    def alphabeta(self, depth, alpha, beta, maximizing_player):
-        pass
+        if depth == 0 or self.is_finished():
+            return self.evaluate_heuristic(0), None, 0
+
+        if maximizing_player:
+            best_value = float('-inf')
+            best_move = None
+            for child, coords in self.generate_children():
+                score, _1, _2 = child.alphabeta(depth - 1, alpha, beta, False)
+                if score > best_value:
+                    best_value = score
+                    best_move = coords
+                alpha = max(alpha, best_value)
+                if beta <= best_value:
+                    break
+            return best_value, best_move, depth
+        else:
+            best_value = float('inf')
+            best_move = None
+            for child, coords in self.generate_children():
+                score, _1, _2 = child.alphabeta(depth - 1, alpha, beta, True)
+                print("Score: ", score)
+                if score < best_value:
+                    best_value = score
+                    best_move = coords
+                beta = min(beta, best_value)
+                if best_value <= alpha:
+                    break
+            print("Best: ", best_value)
+            return best_value, best_move, depth
 
     def suggest_move(self) -> Tuple[CoordPair, str] | None:
         """Suggest the next move using minimax alpha beta."""
         output = ""
         start_time = datetime.now()
-        (score, move, avg_depth) = self.random_move()
+        (score, move, avg_depth) = self.alphabeta(1, float('inf'), float('-inf'), self.next_player == Player.Attacker)
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score}")
@@ -781,7 +813,8 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--game_type', type=str, default="manual", help='game type: auto|attacker|defender|manual')
-    parser.add_argument('--not_alpha_beta', action='store_false', help='adversarial search type: minimax(FALSE)|alpha_beta(TRUE)')  # action="store_true" means is that if the argument is given on the command line then a True value should be stored in the parser.
+    parser.add_argument('--not_alpha_beta', action='store_false',
+                        help='adversarial search type: minimax(FALSE)|alpha_beta(TRUE)')  # action="store_true" means is that if the argument is given on the command line then a True value should be stored in the parser.
     parser.add_argument('--max_turns', type=int, default=100, help='max number of turns')
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
@@ -807,7 +840,7 @@ def main():
     if args.not_alpha_beta is not None:
         options.alpha_beta = args.not_alpha_beta
     if args.max_turns is not None:
-       options.max_turns = args.max_turns
+        options.max_turns = args.max_turns
     if args.broker is not None:
         options.broker = args.broker
 
