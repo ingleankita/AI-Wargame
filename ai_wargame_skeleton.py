@@ -696,31 +696,31 @@ class Game:
             return self.evaluate_heuristic(0), None, 0
 
         if maximizing_player:
-            best_value = float('-inf')
+            v = float('-inf')
             best_move = None
             for child, coords in self.generate_children():
                 score, _1, _2 = child.alphabeta(depth - 1, alpha, beta, False)
-                if score > best_value:
-                    best_value = score
+                if score > v:
+                    v = score
                     best_move = coords
-                alpha = max(alpha, best_value)
+                alpha = max(alpha, v)
                 if beta <= alpha:
                     break
-            return best_value, best_move, depth
+            return v, best_move, depth
         else:
-            best_value = float('inf')
+            v = float('inf')
             best_move = None
             for child, coords in self.generate_children():
                 score, _1, _2 = child.alphabeta(depth - 1, alpha, beta, True)
                 print("Score: ", score)
-                if score < best_value:
-                    best_value = score
+                if score < v:
+                    v = score
                     best_move = coords
-                beta = min(beta, best_value)
+                beta = min(beta, v)
                 if beta <= alpha:
                     break
-            print("Best: ", best_value)
-            return best_value, best_move, depth
+            print("Best: ", v)
+            return v, best_move, depth
 
     def suggest_move(self) -> Tuple[CoordPair, str] | None:
         """Suggest the next move using minimax alpha beta."""
