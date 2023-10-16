@@ -704,7 +704,7 @@ class Game:
                     best_value = score
                     best_move = coords
                 alpha = max(alpha, best_value)
-                if beta <= best_value:
+                if beta <= alpha:
                     break
             return best_value, best_move, depth
         else:
@@ -717,7 +717,7 @@ class Game:
                     best_value = score
                     best_move = coords
                 beta = min(beta, best_value)
-                if best_value <= alpha:
+                if beta <= alpha:
                     break
             print("Best: ", best_value)
             return best_value, best_move, depth
@@ -726,7 +726,7 @@ class Game:
         """Suggest the next move using minimax alpha beta."""
         output = ""
         start_time = datetime.now()
-        (score, move, avg_depth) = self.alphabeta(1, float('inf'), float('-inf'), self.next_player == Player.Attacker)
+        (score, move, avg_depth) = self.alphabeta(1, float('-inf'), float('inf'), self.next_player == Player.Attacker)
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score}")
