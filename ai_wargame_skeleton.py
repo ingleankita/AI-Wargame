@@ -667,15 +667,31 @@ class Game:
 
         return h_value
 
-    def random_move(self) -> Tuple[int, CoordPair | None, float]:  # return Tuple(Heuristic score, CoordPair, average_depth)
-        """Returns a random move. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
-        move_candidates = list(self.move_candidates())
-        random.shuffle(move_candidates)
-        if len(move_candidates) > 0:
-            return (0, move_candidates[0], 1)
-        else:
-            # No more move available
-            return (0, None, 0)
+    # def random_move(self) -> Tuple[int, CoordPair | None, float]:  # return Tuple(Heuristic score, CoordPair, average_depth)
+    #     """Returns a random move. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
+    #     move_candidates = list(self.move_candidates())
+    #     random.shuffle(move_candidates)
+    #     if len(move_candidates) > 0:
+    #         return self.evaluate_heuristic(0), move_candidates[0], 1
+    #     else:
+    #         # No more move available
+    #         return self.evaluate_heuristic(0), None, 0
+
+    def generate_children(self):
+        # list containing all valid moves from the current state of the game
+        valid_moves = []
+        cells = CoordPair(Coord(0, 0), Coord(4, 4))
+        for i in cells.iter_rectangle():
+            for j in cells.iter_rectangle():
+                coords = CoordPair(i, j)
+                if self.is_valid_move(coords):
+                    valid_moves.append(coords)
+        print("All valid moves for start game state: ")
+        for valid_move in valid_moves:
+            print(valid_move)
+
+    def alphabeta(self, depth, alpha, beta, maximizing_player):
+        pass
 
     def suggest_move(self) -> Tuple[CoordPair, str] | None:
         """Suggest the next move using minimax alpha beta."""
@@ -800,6 +816,7 @@ def main():
 
     # create a new game
     game = Game(options=options)
+    game.generate_children()
 
     print(f"Max time (seconds): {options.max_time}")
     print(f"Maximum number of turns: {options.max_turns}")
