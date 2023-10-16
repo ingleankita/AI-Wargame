@@ -677,18 +677,15 @@ class Game:
     #         # No more move available
     #         return self.evaluate_heuristic(0), None, 0
 
-    def generate_children(self):
+    def generate_children(self) -> Iterable[CoordPair]:
         # list containing all valid moves from the current state of the game
-        valid_moves = []
         cells = CoordPair(Coord(0, 0), Coord(4, 4))
         for i in cells.iter_rectangle():
             for j in cells.iter_rectangle():
                 coords = CoordPair(i, j)
                 if self.is_valid_move(coords):
-                    valid_moves.append(coords)
-        print("All valid moves for start game state: ")
-        for valid_move in valid_moves:
-            print(valid_move)
+                    yield coords
+
 
     def alphabeta(self, depth, alpha, beta, maximizing_player):
         pass
@@ -816,7 +813,6 @@ def main():
 
     # create a new game
     game = Game(options=options)
-    game.generate_children()
 
     print(f"Max time (seconds): {options.max_time}")
     print(f"Maximum number of turns: {options.max_turns}")
