@@ -283,8 +283,10 @@ def evaluate_heuristic(node, e=0) -> int:
                 defender_units_count[4] += 1
 
     if e == 0:
-        attacker = 3 * attacker_units_count[2] + 3 * attacker_units_count[1] + 3 * attacker_units_count[4] + 3 * attacker_units_count[3] + 9999 * attacker_units_count[0]
-        defender = 3 * defender_units_count[2] + 3 * defender_units_count[1] + 3 * defender_units_count[4] + 3 * defender_units_count[3] + 9999 * defender_units_count[0]
+        attacker = 3 * attacker_units_count[2] + 3 * attacker_units_count[1] + 3 * attacker_units_count[4] + 3 * \
+                   attacker_units_count[3] + 9999 * attacker_units_count[0]
+        defender = 3 * defender_units_count[2] + 3 * defender_units_count[1] + 3 * defender_units_count[4] + 3 * \
+                   defender_units_count[3] + 9999 * defender_units_count[0]
         h_value = attacker - defender
     elif e == 1:
         h_value = 0  # TODO
@@ -293,68 +295,48 @@ def evaluate_heuristic(node, e=0) -> int:
 
     return h_value
 
-def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
 
+def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
     if depth == 0 or node.is_finished():
         return evaluate_heuristic(node, 0), None, 0
-
     if maximizing_player:
         v = float('-inf')
         best_move = None
         for child, move in list(generate_children(node)):
             score, _1, _2 = alphabeta(child, depth - 1, alpha, beta, False)
-            print("Score: ", score)
             if score > v:
                 v = score
                 best_move = move
             alpha = max(alpha, v)
             if beta <= alpha:
                 break
-        print("Best: ", v)
         return v, best_move, depth
     else:
         v = float('inf')
         best_move = None
         for child, move in list(generate_children(node)):
-            print(move)
             score, _1, _2 = alphabeta(child, depth - 1, alpha, beta, True)
-            print("Score: ", score)
             if score < v:
                 v = score
                 best_move = move
             beta = min(beta, v)
             if beta <= alpha:
                 break
-        print("Best: ", v)
-        print("Best move: ", best_move)
         return v, best_move, depth
 
-def generate_children(node) -> Iterable[CoordPair]:  # Generates children of a node (game state)
 
-    print("Generating children.....")
-    cells = CoordPair(Coord(0, 0), Coord(4, 4))
+def generate_children(node) -> Iterable[CoordPair]:  # Generates all children of a node
+    cells = CoordPair(Coord(0, 0), Coord(4, 4))  # Get range of start and end coordinates
+    for i in cells.iter_rectangle():
+        for j in cells.iter_rectangle():
+            coords = CoordPair(i, j)
+            if node.is_valid_move(coords):  # Check if move is valid
+                child = node.clone()
+                perform_move = child.perform_move(coords)
+                perform_move_success, result = perform_move
+                if perform_move_success:  # If move could be performed successfully
+                    yield child, coords
 
-    if node.next_player is Player.Attacker:
-        for i in cells.iter_rectangle():
-            for j in cells.iter_rectangle():
-                coords = CoordPair(i, j)
-                if node.is_valid_move(coords):
-                    child = node.clone()
-                    perform_move = child.perform_move(coords)
-                    perform_move_success, result = perform_move
-                    if perform_move_success:
-                        yield child, coords
-
-    elif node.next_player is Player.Defender:
-        for i in cells.iter_rectangle():
-            for j in cells.iter_rectangle():
-                coords = CoordPair(i, j)
-                if node.is_valid_move(coords):
-                    child = node.clone()
-                    perform_move = child.perform_move(coords)
-                    perform_move_success, result = perform_move
-                    if perform_move_success:
-                        yield child, coords
 
 @dataclass
 class Game:
@@ -757,7 +739,6 @@ class Game:
         """Suggest the next move using minimax alpha beta."""
         output = ""
         start_time = datetime.now()
-
         (score, move, avg_depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker)
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds

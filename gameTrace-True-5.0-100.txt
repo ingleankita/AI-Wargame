@@ -1,4 +1,4 @@
-Max time (seconds): 200.0
+Max time (seconds): 5.0
 Maximum number of turns: 100
 Alpha-Beta: True
 Play mode: GameType.AttackerVsComp
@@ -147,8 +147,7 @@ C: dF7  .   .   .  aP9
 D: aP7  .   .  aF9 aV9 
 E:  .   .   .  aV9 aA9 
 
-Player Attacker: attack from D0 to C0
-combat damage: to source = 1, to target = 1
+Player Attacker: move from D3 to D2
 
 Next player: Defender
 Turns played: 11
@@ -157,8 +156,8 @@ Turn #12
     0   1   2   3   4  
 A:  .   .  dA9 dF9  .  
 B: dT9 dP9 dT9  .   .  
-C: dF6  .   .   .  aP9 
-D: aP6  .   .  aF9 aV9 
+C: dF7  .   .   .  aP9 
+D: aP7  .  aF9  .  aV9 
 E:  .   .   .  aV9 aA9 
 
 Heuristic score: 0Average recursive depth: 1.0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from A3 to A4
@@ -170,12 +169,11 @@ Turn #13
     0   1   2   3   4  
 A:  .   .  dA9  .  dF9 
 B: dT9 dP9 dT9  .   .  
-C: dF6  .   .   .  aP9 
-D: aP6  .   .  aF9 aV9 
+C: dF7  .   .   .  aP9 
+D: aP7  .  aF9  .  aV9 
 E:  .   .   .  aV9 aA9 
 
-Player Attacker: attack from D0 to C0
-combat damage: to source = 1, to target = 1
+Player Attacker: move from D2 to D1
 
 Next player: Defender
 Turns played: 13
@@ -184,8 +182,8 @@ Turn #14
     0   1   2   3   4  
 A:  .   .  dA9  .  dF9 
 B: dT9 dP9 dT9  .   .  
-C: dF5  .   .   .  aP9 
-D: aP5  .   .  aF9 aV9 
+C: dF7  .   .   .  aP9 
+D: aP7 aF9  .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
 Heuristic score: 0Average recursive depth: 1.0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from A2 to A3
@@ -197,12 +195,24 @@ Turn #15
     0   1   2   3   4  
 A:  .   .   .  dA9 dF9 
 B: dT9 dP9 dT9  .   .  
-C: dF5  .   .   .  aP9 
-D: aP5  .   .  aF9 aV9 
+C: dF7  .   .   .  aP9 
+D: aP7 aF9  .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
-Player Attacker: attack from D0 to C0
-combat damage: to source = 1, to target = 1
+The move is not valid! Try again.
+
+Next player: Attacker
+Turns played: 14
+Turn #15
+
+    0   1   2   3   4  
+A:  .   .   .  dA9 dF9 
+B: dT9 dP9 dT9  .   .  
+C: dF7  .   .   .  aP9 
+D: aP7 aF9  .   .  aV9 
+E:  .   .   .  aV9 aA9 
+
+Player Attacker: move from D1 to C1
 
 Next player: Defender
 Turns played: 15
@@ -211,8 +221,8 @@ Turn #16
     0   1   2   3   4  
 A:  .   .   .  dA9 dF9 
 B: dT9 dP9 dT9  .   .  
-C: dF4  .   .   .  aP9 
-D: aP4  .   .  aF9 aV9 
+C: dF7 aF9  .   .  aP9 
+D: aP7  .   .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
 Heuristic score: 0Average recursive depth: 1.0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from A3 to B3
@@ -224,11 +234,11 @@ Turn #17
     0   1   2   3   4  
 A:  .   .   .   .  dF9 
 B: dT9 dP9 dT9 dA9  .  
-C: dF4  .   .   .  aP9 
-D: aP4  .   .  aF9 aV9 
+C: dF7 aF9  .   .  aP9 
+D: aP7  .   .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
-Player Attacker: attack from D0 to C0
+Player Attacker: attack from C1 to C0
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -238,8 +248,8 @@ Turn #18
     0   1   2   3   4  
 A:  .   .   .   .  dF9 
 B: dT9 dP9 dT9 dA9  .  
-C: dF3  .   .   .  aP9 
-D: aP3  .   .  aF9 aV9 
+C: dF6 aF8  .   .  aP9 
+D: aP7  .   .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
 Heuristic score: 0Average recursive depth: 1.0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from A4 to B4
@@ -251,11 +261,11 @@ Turn #19
     0   1   2   3   4  
 A:  .   .   .   .   .  
 B: dT9 dP9 dT9 dA9 dF9 
-C: dF3  .   .   .  aP9 
-D: aP3  .   .  aF9 aV9 
+C: dF6 aF8  .   .  aP9 
+D: aP7  .   .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
-Player Attacker: attack from D0 to C0
+Player Attacker: attack from C1 to C0
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -265,8 +275,8 @@ Turn #20
     0   1   2   3   4  
 A:  .   .   .   .   .  
 B: dT9 dP9 dT9 dA9 dF9 
-C: dF2  .   .   .  aP9 
-D: aP2  .   .  aF9 aV9 
+C: dF5 aF7  .   .  aP9 
+D: aP7  .   .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
 Heuristic score: 0Average recursive depth: 1.0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from B0 to A0
@@ -278,11 +288,11 @@ Turn #21
     0   1   2   3   4  
 A: dT9  .   .   .   .  
 B:  .  dP9 dT9 dA9 dF9 
-C: dF2  .   .   .  aP9 
-D: aP2  .   .  aF9 aV9 
+C: dF5 aF7  .   .  aP9 
+D: aP7  .   .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
-Player Attacker: attack from D0 to C0
+Player Attacker: attack from C1 to C0
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -292,8 +302,8 @@ Turn #22
     0   1   2   3   4  
 A: dT9  .   .   .   .  
 B:  .  dP9 dT9 dA9 dF9 
-C: dF1  .   .   .  aP9 
-D: aP1  .   .  aF9 aV9 
+C: dF4 aF6  .   .  aP9 
+D: aP7  .   .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
 Heuristic score: 0Average recursive depth: 1.0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from A0 to A1
@@ -305,12 +315,11 @@ Turn #23
     0   1   2   3   4  
 A:  .  dT9  .   .   .  
 B:  .  dP9 dT9 dA9 dF9 
-C: dF1  .   .   .  aP9 
-D: aP1  .   .  aF9 aV9 
+C: dF4 aF6  .   .  aP9 
+D: aP7  .   .   .  aV9 
 E:  .   .   .  aV9 aA9 
 
-Player Attacker: attack from D0 to C0
-combat damage: to source = 1, to target = 1
+Player Attacker: move from E3 to E2
 
 Next player: Defender
 Turns played: 23
@@ -319,9 +328,9 @@ Turn #24
     0   1   2   3   4  
 A:  .  dT9  .   .   .  
 B:  .  dP9 dT9 dA9 dF9 
-C:  .   .   .   .  aP9 
-D:  .   .   .  aF9 aV9 
-E:  .   .   .  aV9 aA9 
+C: dF4 aF6  .   .  aP9 
+D: aP7  .   .   .  aV9 
+E:  .   .  aV9  .  aA9 
 
 Heuristic score: 0Average recursive depth: 1.0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from A1 to A0
 
@@ -332,7 +341,72 @@ Turn #25
     0   1   2   3   4  
 A: dT9  .   .   .   .  
 B:  .  dP9 dT9 dA9 dF9 
-C:  .   .   .   .  aP9 
-D:  .   .   .  aF9 aV9 
-E:  .   .   .  aV9 aA9 
+C: dF4 aF6  .   .  aP9 
+D: aP7  .   .   .  aV9 
+E:  .   .  aV9  .  aA9 
+
+Player Attacker: move from E2 to E1
+
+Next player: Defender
+Turns played: 25
+Turn #26
+
+    0   1   2   3   4  
+A: dT9  .   .   .   .  
+B:  .  dP9 dT9 dA9 dF9 
+C: dF4 aF6  .   .  aP9 
+D: aP7  .   .   .  aV9 
+E:  .  aV9  .   .  aA9 
+
+Heuristic score: 0Average recursive depth: 1.0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from A0 to A1
+
+Next player: Attacker
+Turns played: 26
+Turn #27
+
+    0   1   2   3   4  
+A:  .  dT9  .   .   .  
+B:  .  dP9 dT9 dA9 dF9 
+C: dF4 aF6  .   .  aP9 
+D: aP7  .   .   .  aV9 
+E:  .  aV9  .   .  aA9 
+
+The move is not valid! Try again.
+
+Next player: Attacker
+Turns played: 26
+Turn #27
+
+    0   1   2   3   4  
+A:  .  dT9  .   .   .  
+B:  .  dP9 dT9 dA9 dF9 
+C: dF4 aF6  .   .  aP9 
+D: aP7  .   .   .  aV9 
+E:  .  aV9  .   .  aA9 
+
+Player Attacker: move from E1 to E0
+
+Next player: Defender
+Turns played: 27
+Turn #28
+
+    0   1   2   3   4  
+A:  .  dT9  .   .   .  
+B:  .  dP9 dT9 dA9 dF9 
+C: dF4 aF6  .   .  aP9 
+D: aP7  .   .   .  aV9 
+E: aV9  .   .   .  aA9 
+
+Heuristic score: 0Average recursive depth: 1.0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from A1 to A0
+
+Next player: Attacker
+Turns played: 28
+Turn #29
+
+    0   1   2   3   4  
+A: dT9  .   .   .   .  
+B:  .  dP9 dT9 dA9 dF9 
+C: dF4 aF6  .   .  aP9 
+D: aP7  .   .   .  aV9 
+E: aV9  .   .   .  aA9 
 
