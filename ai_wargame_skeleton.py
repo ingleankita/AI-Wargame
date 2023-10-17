@@ -246,6 +246,111 @@ class Stats:
 
 ##############################################################################################################
 
+
+def evaluate_heuristic(node, e=0) -> int:
+    """Evaluate heuristic value of state depending on choice of e0, e1, e2 """
+    h_value = 0
+
+    attacker_units = list(node.get_attacker_units())
+    defender_units = list(node.get_defender_units())
+
+    attacker_units_count = [0, 0, 0, 0, 0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
+    for unit_info in attacker_units:
+        match unit_info.type:
+            case UnitType.AI:
+                attacker_units_count[0] += 1
+            case UnitType.Tech:
+                attacker_units_count[1] += 1
+            case UnitType.Virus:
+                attacker_units_count[2] += 1
+            case UnitType.Program:
+                attacker_units_count[3] += 1
+            case UnitType.Firewall:
+                attacker_units_count[4] += 1
+
+    defender_units_count = [0, 0, 0, 0, 0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
+    for unit_info in defender_units:
+        match unit_info.type:
+            case UnitType.AI:
+                defender_units_count[0] += 1
+            case UnitType.Tech:
+                defender_units_count[1] += 1
+            case UnitType.Virus:
+                defender_units_count[2] += 1
+            case UnitType.Program:
+                defender_units_count[3] += 1
+            case UnitType.Firewall:
+                defender_units_count[4] += 1
+
+    if e == 0:
+        attacker = 3 * attacker_units_count[2] + 3 * attacker_units_count[1] + 3 * attacker_units_count[4] + 3 * attacker_units_count[3] + 9999 * attacker_units_count[0]
+        defender = 3 * defender_units_count[2] + 3 * defender_units_count[1] + 3 * defender_units_count[4] + 3 * defender_units_count[3] + 9999 * defender_units_count[0]
+        h_value = attacker - defender
+    elif e == 1:
+        h_value = 0  # TODO
+    else:
+        h_value = 1  # TODO
+
+    return h_value
+
+def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
+
+    if depth == 0 or node.is_finished():
+        return evaluate_heuristic(node, 0), None, 0
+
+    if maximizing_player:
+        v = float('-inf')
+        best_move = None
+        for child, move in list(generate_children(node)):
+            print(move)
+            score, _1, _2 = alphabeta(child, depth - 1, alpha, beta, False)
+            print("Score: ", score)
+            if score > v:
+                v = score
+                best_move = move
+            alpha = max(alpha, v)
+            if beta <= alpha:
+                break
+        print("Best: ", v)
+        return v, best_move, depth
+    else:
+        v = float('inf')
+        best_move = None
+        for child, move in list(generate_children(node)):
+            score, _1, _2 = alphabeta(child, depth - 1, alpha, beta, True)
+            print("Score: ", score)
+            if score < v:
+                v = score
+                best_move = move
+            beta = min(beta, v)
+            if beta <= alpha:
+                break
+        print("Best: ", v)
+        return v, best_move, depth
+
+def generate_children(node) -> Iterable[CoordPair]:  # Generates children of a node (game state)
+
+    print("Generating children.....")
+    cells = CoordPair(Coord(0, 0), Coord(4, 4))
+
+    if node.next_player is Player.Attacker:
+        for i in cells.iter_rectangle():
+            for j in cells.iter_rectangle():
+                coords = CoordPair(i, j)
+                if node.is_valid_move(coords):
+                    child = node.clone()
+                    child.perform_move(coords)
+                    yield child, coords
+
+    elif node.next_player is Player.Defender:
+        for i in cells.iter_rectangle():
+            for j in cells.iter_rectangle():
+                coords = CoordPair(i, j)
+                if node.is_valid_move(coords):
+                    child = node.clone()
+                    child.perform_move(coords)
+                    yield child, coords
+
 @dataclass
 class Game:
     """Representation of the game state."""
@@ -274,6 +379,24 @@ class Game:
         self.set(Coord(md - 2, md), Unit(player=Player.Attacker, type=UnitType.Program))
         self.set(Coord(md, md - 2), Unit(player=Player.Attacker, type=UnitType.Program))
         self.set(Coord(md - 1, md - 1), Unit(player=Player.Attacker, type=UnitType.Firewall))
+
+    def get_attacker_units(self) -> Iterable[Unit]:
+        for row in range(len(self.board)):
+            for col in range(len(self.board[row])):
+                if self.board[row][col] and self.board[row][col].player is Player.Attacker:
+                    yield self.board[row][col]
+
+    def get_defender_units(self) -> Iterable[Unit]:
+        for row in range(len(self.board)):
+            for col in range(len(self.board[row])):
+                if self.board[row][col] and self.board[row][col].player is Player.Defender:
+                    yield self.board[row][col]
+
+    def get_units(self):
+        for row in range(len(self.board)):
+            for col in range(len(self.board[row])):
+                if self.board[row][col]:
+                    print(self.board[row][col].to_string())
 
     def clone(self) -> Game:
         """Make a new copy of a game for minimax recursion.
@@ -625,108 +748,12 @@ class Game:
             move.dst = src
             yield move.clone()
 
-    def evaluate_heuristic(self, e=0) -> int:
-        """Evaluate heuristic value of state depending on choice of e0, e1, e2 """
-        h_value = 0
-
-        p1 = self.next_player
-        p1_unit_nb = [0, 0, 0, 0, 0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
-        for unit_info in list(self.player_units(p1)):
-            match unit_info[1].type:
-                case UnitType.AI:
-                    p1_unit_nb[0] += 1
-                case UnitType.Tech:
-                    p1_unit_nb[1] += 1
-                case UnitType.Virus:
-                    p1_unit_nb[2] += 1
-                case UnitType.Program:
-                    p1_unit_nb[3] += 1
-                case UnitType.Firewall:
-                    p1_unit_nb[4] += 1
-
-        p2 = self.next_player.next()
-        p2_unit_nb = [0, 0, 0, 0, 0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
-        for unit_info in list(self.player_units(p2)):
-            match unit_info[1].type:
-                case UnitType.AI:
-                    p2_unit_nb[0] += 1
-                case UnitType.Tech:
-                    p2_unit_nb[1] += 1
-                case UnitType.Virus:
-                    p2_unit_nb[2] += 1
-                case UnitType.Program:
-                    p2_unit_nb[3] += 1
-                case UnitType.Firewall:
-                    p2_unit_nb[4] += 1
-
-        if e == 0:
-            h_value = 3 * p1_unit_nb[2] + 3 * p1_unit_nb[1] + 3 * p1_unit_nb[4] + 3 * p1_unit_nb[3] + 9999 * p1_unit_nb[
-                0] - (3 * p2_unit_nb[2] + 3 * p2_unit_nb[1] + 3 * p2_unit_nb[4] + 3 * p2_unit_nb[3] + 9999 * p2_unit_nb[
-                0])
-        elif e == 1:
-            h_value = 0  # TODO
-        else:
-            h_value = 1  # TODO
-
-        return h_value
-
-    # def random_move(self) -> Tuple[int, CoordPair | None, float]:  # return Tuple(Heuristic score, CoordPair, average_depth)
-    #     """Returns a random move. TODO: REPLACE RANDOM_MOVE WITH PROPER GAME LOGIC!!!"""
-    #     move_candidates = list(self.move_candidates())
-    #     random.shuffle(move_candidates)
-    #     if len(move_candidates) > 0:
-    #         return self.evaluate_heuristic(0), move_candidates[0], 1
-    #     else:
-    #         # No more move available
-    #         return self.evaluate_heuristic(0), None, 0
-
-    def generate_children(self) -> Iterable[Tuple[Game, CoordPair]]:  # Generates children of a node (game state)
-        cells = CoordPair(Coord(0, 0), Coord(4, 4))
-        for i in cells.iter_rectangle():
-            for j in cells.iter_rectangle():
-                node = self.clone()
-                coords = CoordPair(i, j)
-                if node.is_valid_move(coords):
-                    node.perform_move(coords)
-                    yield node, coords
-
-    def alphabeta(self, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
-
-        if depth == 0 or self.is_finished():
-            return self.evaluate_heuristic(0), None, 0
-
-        if maximizing_player:
-            v = float('-inf')
-            best_move = None
-            for child, coords in self.generate_children():
-                score, _1, _2 = child.alphabeta(depth - 1, alpha, beta, False)
-                if score > v:
-                    v = score
-                    best_move = coords
-                alpha = max(alpha, v)
-                if beta <= alpha:
-                    break
-            return v, best_move, depth
-        else:
-            v = float('inf')
-            best_move = None
-            for child, coords in self.generate_children():
-                score, _1, _2 = child.alphabeta(depth - 1, alpha, beta, True)
-                print("Score: ", score)
-                if score < v:
-                    v = score
-                    best_move = coords
-                beta = min(beta, v)
-                if beta <= alpha:
-                    break
-            print("Best: ", v)
-            return v, best_move, depth
-
     def suggest_move(self) -> Tuple[CoordPair, str] | None:
         """Suggest the next move using minimax alpha beta."""
         output = ""
         start_time = datetime.now()
-        (score, move, avg_depth) = self.alphabeta(1, float('-inf'), float('inf'), self.next_player == Player.Attacker)
+
+        (score, move, avg_depth) = alphabeta(self, 1, float('-inf'), float('inf'), False)
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score}")
