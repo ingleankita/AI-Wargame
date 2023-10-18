@@ -826,9 +826,11 @@ def main():
     parser.add_argument('--max_depth', type=int, help='maximum search depth')
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--game_type', type=str, default="manual", help='game type: auto|attacker|defender|manual')
-    parser.add_argument('--not_alpha_beta', action='store_false',
-                        help='adversarial search type: minimax(FALSE)|alpha_beta(TRUE)')  # action="store_true" means is that if the argument is given on the command line then a True value should be stored in the parser.
+    # To customize adversarial search type: minimax OR alpha-beta
+    parser.add_argument('--not_alpha_beta', action='store_false', help='adversarial search type: minimax(FALSE)|alpha_beta(TRUE)')  # action="store_true" means is that if the argument is given on the command line then a True value should be stored in the parser.
+    # To customize max number of turn
     parser.add_argument('--max_turns', type=int, default=100, help='max number of turns')
+
     parser.add_argument('--broker', type=str, help='play via a game broker')
     args = parser.parse_args()
 
