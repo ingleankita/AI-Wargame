@@ -256,6 +256,23 @@ def evaluate_heuristic(node, e=0) -> int:
     attacker_unit_type = [0, 0, 0, 0, 0]  # Count of Attacker's unit types
     defender_unit_type = [0, 0, 0, 0, 0]  # Count of Defender's unit types
 
+    # Get player units and counts
+    attacker_units = list(node.player_units(Player.Attacker))
+    defender_units = list(node.player_units(Player.Defender))
+
+    # Find positions of the attacker's AI and the defender's AI
+    attacker_ai_position = None
+    defender_ai_position = None
+    for row in range(len(node.board)):
+        for col in range(len(node.board[row])):
+            if node.board[row][col]:
+                unit = node.board[row][col]
+                if unit.type == UnitType.AI:
+                    if unit.player == Player.Attacker:
+                        attacker_ai_position = (row, col)
+                    if unit.player == Player.Defender:
+                        defender_ai_position = (row, col)
+
     # Heuristic function e0()
     # This function consider the total units a player currently has on the board. All units are of equal weight except for AI
     if e == 0:
@@ -283,36 +300,16 @@ def evaluate_heuristic(node, e=0) -> int:
     # This heuristic considers a player's number of unit, unit health, and unit proximity to the opponent's AI. Each feature is assigned with a weight: health > number of unit > proximity to opponent AI
     # And to consider the importance of each unit type, the features above are calculated in multiplication of unit_type_weight
     elif e == 1:
-        # Define values for each unit type
-        UNIT_TYPE_WEIGHT = [100, 30, 10, 1, 5] # A - V - T - P - F
 
-        # Assign a weight to different aspects of the game
-        WEIGHT_HEALTH = 10
-        WEIGHT_COUNT_UNIT = 5
-        WEIGHT_DISTANCE_TO_ATTACKER_AI = 2
-
-
-        # Find positions of the attacker's AI and the defender's AI
-        attacker_ai_position = None
-        defender_ai_position = None
-        for row in range(len(node.board)):
-            for col in range(len(node.board[row])):
-                if node.board[row][col]:
-                    unit = node.board[row][col]
-                    if unit.type == UnitType.AI:
-                        if unit.player == Player.Attacker:
-                            attacker_ai_position = (row, col)
-                        if unit.player == Player.Defender:
-                            defender_ai_position = (row, col)
-
-        # Get player units and counts
-        attacker_units = list(node.player_units(Player.Attacker))
-        defender_units = list(node.player_units(Player.Defender))
+        UNIT_TYPE_WEIGHT = [100, 30, 20, 5, 10]  # A - V - T - P - F
+        WEIGHT_HEALTH = 5
+        WEIGHT_COUNT_UNIT = 3
+        WEIGHT_DISTANCE_TO_AI = 2
 
         # Evaluate heuristic score for attcker's unit
         for coord, unit in attacker_units:
             h_score += UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT
-            h_score += UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
+            h_score += unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
             # Calculate distance from unit to defender's AI
             if defender_ai_position:
                 distance_to_defender_ai = abs(coord.row - defender_ai_position[0]) + abs(coord.col - defender_ai_position[1])
@@ -323,24 +320,73 @@ def evaluate_heuristic(node, e=0) -> int:
         # Evaluate heuristic score for defender's unit
         for coord, unit in defender_units:
             h_score -= UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT
-            h_score -= UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
+            h_score -= unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
             # Calculate distance from unit to attacker's AI
             if attacker_ai_position:
                 distance_to_attacker_ai = abs(coord.row - attacker_ai_position[0]) + abs(
                     coord.col - attacker_ai_position[1])
             else:
                 distance_to_attacker_ai = 0
-            h_score -= distance_to_attacker_ai * WEIGHT_DISTANCE_TO_ATTACKER_AI
+            h_score -= distance_to_attacker_ai * WEIGHT_DISTANCE_TO_AI
 
-    # Heuristic function e(2)
+    # Heuristic function e2()
+    # This heuristic funciton considers the move that it can either make the most attack or most repair.
+    # In case there is no attack or repair available, it based on the health and distance to opponent AI as above
     else:
         h_score = 0 # TODO
-
+        # UNIT_TYPE_WEIGHT = [100, 30, 10, 1, 5]  # A - V - T - P - F
+        # WEIGHT_ATTACKER_ATTACK = 5
+        # WEIGHT_ATTACKER_REPAIR = 3
+        # WEIGHT_DEFENDER_ATTACK = 3
+        # WEIGHT_DEFENDER_REPAIR = 5
+        # WEIGHT_HEALTH = 10
+        # WEIGHT_COUNT_UNIT = 5
+        # WEIGHT_DISTANCE_TO_AI = 2
+        #
+        # # Evaluate heuristic score for attcker's unit
+        # player_accumulate_health = sum(unit.health for _, unit in attacker_units)
+        # opponent_accumulate_health = sum(unit.health for _, unit in defender_units
+        #     max_attack_amt = 0
+        #     max_repair_amt = 0
+        #     for adj_coord in coord.iter_adjacent():
+        #         if node.get(adj_coord):
+        #             if node.get(adj_coord) is Player.Defender:
+        #                 enemy = node.get(adj_coord)
+        #
+        #                 self_dmg_amt = enemy.damage_amount(unit)
+        #                 enemy_dmg_amt = unit.damage_amount(enemy)
+        #                 if unit.health - self_dmg_amt > 0:
+        #                     if enemy_dmg_amt > max_attack_amt:
+        #                         max_attack_amt = enemy_dmg_amt
+        #             else:
+        #                 friend = node.get(adj_coord)
+        #                 if friend.health < 9:
+        #                     repair_amount = unit.repair_amount(friend)
+        #                     if repair_amount > 0 and repair_amount > max_repair_amt:
+        #                         max_repair_amt = repair_amount
+        #         else:
+        #             continue
+        #     if max_attack_amt == 0 or max_repair_amt == 0:
+        #         h_score += UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT
+        #         h_score += unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
+        #         # Calculate distance from unit to defender's AI
+        #         if defender_ai_position:
+        #             distance_to_defender_ai = abs(coord.row - defender_ai_position[0]) + abs(coord.col - defender_ai_position[1])
+        #         else:
+        #             distance_to_defender_ai = 0
+        #         h_score += distance_to_defender_ai * WEIGHT_DISTANCE_TO_AI
+        #     elif player_accumulate_health + max_repair_amt > opponent_accumulate_health - max_attack_amt:
+        #         h_score += max_repair_amt * WEIGHT_ATTACKER_REPAIR
+        #     else:
+        #         h_score += max_attack_amt * WEIGHT_ATTACKER_ATTACK
+        #
     return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
 
 
 def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
     if depth == 0 or node.is_finished():
+        # print("==============================")
+        # print(node.to_string())
         # print("Score: ", evaluate_heuristic(node, 1))
         return evaluate_heuristic(node, 1), None, 0
     if maximizing_player:
@@ -731,6 +777,7 @@ class Game:
                     print("The move is not valid! Try again.")
                     return "The move is not valid! Try again."
 
+        return potential_attack
     def computer_turn(self) -> [CoordPair, str] | None:
         """Computer plays a move."""
         (mv, output) = self.suggest_move()
