@@ -301,33 +301,33 @@ def evaluate_heuristic(node, e=0) -> int:
     # And to consider the importance of each unit type, the features above are calculated in multiplication of unit_type_weight
     elif e == 1:
 
-        UNIT_TYPE_WEIGHT = [100, 30, 20, 5, 10]  # A - V - T - P - F
+        UNIT_TYPE_WEIGHT = [9999, 500, 500, 20, 100]  # A - V - T - P - F
         WEIGHT_HEALTH = 5
         WEIGHT_COUNT_UNIT = 3
         WEIGHT_DISTANCE_TO_AI = 2
 
         # Evaluate heuristic score for attcker's unit
         for coord, unit in attacker_units:
-            h_score += UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT
-            h_score += unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
+            h_score += UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT # 300
+            h_score += unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH # 4500
             # Calculate distance from unit to defender's AI
             if defender_ai_position:
                 distance_to_defender_ai = abs(coord.row - defender_ai_position[0]) + abs(coord.col - defender_ai_position[1])
             else:
                 distance_to_defender_ai = 0
-            h_score += distance_to_defender_ai
+            h_score -= distance_to_defender_ai*WEIGHT_DISTANCE_TO_AI
 
         # Evaluate heuristic score for defender's unit
         for coord, unit in defender_units:
-            h_score -= UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT
-            h_score -= unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
+            h_score -= UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT # -300
+            h_score -= unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH # -4500
             # Calculate distance from unit to attacker's AI
             if attacker_ai_position:
                 distance_to_attacker_ai = abs(coord.row - attacker_ai_position[0]) + abs(
                     coord.col - attacker_ai_position[1])
             else:
                 distance_to_attacker_ai = 0
-            h_score -= distance_to_attacker_ai * WEIGHT_DISTANCE_TO_AI
+            h_score += distance_to_attacker_ai*WEIGHT_DISTANCE_TO_AI
 
     # Heuristic function e2()
     # This heuristic funciton considers the move that it can either make the most attack or most repair.
