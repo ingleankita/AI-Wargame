@@ -8,6 +8,7 @@ from time import sleep
 from typing import Tuple, TypeVar, Type, Iterable, ClassVar
 import random
 import requests
+import time
 
 # maximum and minimum values for our heuristic scores (usually represents an end of game condition)
 MAX_HEURISTIC_SCORE = 2000000000
@@ -249,57 +250,104 @@ class Stats:
 
 def evaluate_heuristic(node, e=0) -> int:
     """Evaluate heuristic value of state depending on choice of e0, e1, e2 """
-    h_value = 0
+    # Initialize a heuristic score
+    h_score = 0
 
-    attacker_units = list(node.get_attacker_units())
-    defender_units = list(node.get_defender_units())
+    # Get Player unit and count
+    attacker_unit_type = [0, 0, 0, 0, 0]  # Count of Attacker's unit types
+    defender_unit_type = [0, 0, 0, 0, 0]  # Count of Defender's unit types
 
-    attacker_units_count = [0, 0, 0, 0, 0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
-    for unit_info in attacker_units:
-        match unit_info.type:
-            case UnitType.AI:
-                attacker_units_count[0] += 1
-            case UnitType.Tech:
-                attacker_units_count[1] += 1
-            case UnitType.Virus:
-                attacker_units_count[2] += 1
-            case UnitType.Program:
-                attacker_units_count[3] += 1
-            case UnitType.Firewall:
-                attacker_units_count[4] += 1
+    # Get player units and counts
+    attacker_units = list(node.player_units(Player.Attacker))
+    defender_units = list(node.player_units(Player.Defender))
 
-    defender_units_count = [0, 0, 0, 0, 0]  # (A-0)-(T-1)-(V-2)-(P-3)-(F-4)
-    for unit_info in defender_units:
-        match unit_info.type:
-            case UnitType.AI:
-                defender_units_count[0] += 1
-            case UnitType.Tech:
-                defender_units_count[1] += 1
-            case UnitType.Virus:
-                defender_units_count[2] += 1
-            case UnitType.Program:
-                defender_units_count[3] += 1
-            case UnitType.Firewall:
-                defender_units_count[4] += 1
+    # Find positions of the attacker's AI and the defender's AI
+    attacker_ai_position = None
+    defender_ai_position = None
+    for row in range(len(node.board)):
+        for col in range(len(node.board[row])):
+            if node.board[row][col]:
+                unit = node.board[row][col]
+                if unit.type == UnitType.AI:
+                    if unit.player == Player.Attacker:
+                        attacker_ai_position = (row, col)
+                    if unit.player == Player.Defender:
+                        defender_ai_position = (row, col)
 
+    # Heuristic function e0()
+    # This function consider the total units a player currently has on the board. All units are of equal weight except for AI
     if e == 0:
-        attacker = 3 * attacker_units_count[2] + 3 * attacker_units_count[1] + 3 * attacker_units_count[4] + 3 * \
-                   attacker_units_count[3] + 9999 * attacker_units_count[0]
-        defender = 3 * defender_units_count[2] + 3 * defender_units_count[1] + 3 * defender_units_count[4] + 3 * \
-                   defender_units_count[3] + 9999 * defender_units_count[0]
-        h_value = attacker - defender
+
+        # Count the number of units for each unit type
+        for row in range(len(node.board)):
+            for col in range(len(node.board[row])):
+                if node.board[row][col]:
+                    unit = node.board[row][col]
+                    # For Attacker
+                    if unit.player == Player.Attacker:
+                        attacker_unit_type[unit.type.value] += 1
+                    # For Defender
+                    elif unit.player == Player.Defender:
+                        defender_unit_type[unit.type.value] += 1
+
+        attacker = 3 * attacker_unit_type[1] + 3 * attacker_unit_type[2] + 3 * attacker_unit_type[3] + 3 * \
+                   attacker_unit_type[4] + 9999 * attacker_unit_type[0]
+        defender = 3 * defender_unit_type[1] + 3 * defender_unit_type[2] + 3 * defender_unit_type[3] + 3 * \
+                   defender_unit_type[4] + 9999 * defender_unit_type[0]
+
+        h_score = attacker - defender
+
+    # Heuristic function e(1)
+    # This heuristic considers a player's number of unit, unit health, and unit proximity to the opponent's AI. Each feature is assigned with a weight: health > number of unit > proximity to opponent AI
+    # And to consider the importance of each unit type, the features above are calculated in multiplication of unit_type_weight
     elif e == 1:
-        h_value = 0  # TODO
+
+        UNIT_TYPE_WEIGHT = [9999, 500, 500, 20, 100]  # A - V - T - P - F
+        WEIGHT_HEALTH = 5
+        WEIGHT_COUNT_UNIT = 3
+        WEIGHT_DISTANCE_TO_AI = 2
+
+        # Evaluate heuristic score for attcker's unit
+        for coord, unit in attacker_units:
+            h_score += UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT # 300
+            h_score += unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH # 4500
+            # Calculate distance from unit to defender's AI
+            if defender_ai_position:
+                distance_to_defender_ai = abs(coord.row - defender_ai_position[0]) + abs(coord.col - defender_ai_position[1])
+            else:
+                distance_to_defender_ai = 0
+            h_score -= distance_to_defender_ai*WEIGHT_DISTANCE_TO_AI
+
+        # Evaluate heuristic score for defender's unit
+        for coord, unit in defender_units:
+            h_score -= UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT # -300
+            h_score -= unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH # -4500
+            # Calculate distance from unit to attacker's AI
+            if attacker_ai_position:
+                distance_to_attacker_ai = abs(coord.row - attacker_ai_position[0]) + abs(
+                    coord.col - attacker_ai_position[1])
+            else:
+                distance_to_attacker_ai = 0
+            h_score += distance_to_attacker_ai*WEIGHT_DISTANCE_TO_AI
+
+    # Heuristic function e2()
+    # This heuristic funciton considers the move that it can either make the most attack or most repair.
+    # In case there is no attack or repair available, it based on the health and distance to opponent AI as above
     else:
-        h_value = 1  # TODO
+        pass
+    return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
 
-    return h_value
-
-
+num_evals_per_depth = 0
 def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
     if depth == 0 or node.is_finished():
+        # print("==============================")
+        # print(node.to_string())
+        # print("Score: ", evaluate_heuristic(node, 1))
+        global num_evals_per_depth
+        num_evals_per_depth+=1
         return evaluate_heuristic(node, 0), None, 0
     if maximizing_player:
+        num_evals_per_depth = 0
         v = float('-inf')
         best_move = None
         for child, move in list(generate_children(node)):
@@ -310,8 +358,9 @@ def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPa
             alpha = max(alpha, v)
             if beta <= alpha:
                 break
-        return v, best_move, depth
+        return v, best_move, _2
     else:
+        num_evals_per_depth = 0
         v = float('inf')
         best_move = None
         for child, move in list(generate_children(node)):
@@ -322,7 +371,7 @@ def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPa
             beta = min(beta, v)
             if beta <= alpha:
                 break
-        return v, best_move, depth
+        return v, best_move, _2
 
 
 def generate_children(node) -> Iterable[CoordPair]:  # Generates all children of a node
@@ -687,6 +736,7 @@ class Game:
                     print("The move is not valid! Try again.")
                     return "The move is not valid! Try again."
 
+        return potential_attack
     def computer_turn(self) -> [CoordPair, str] | None:
         """Computer plays a move."""
         (mv, output) = self.suggest_move()
@@ -736,16 +786,18 @@ class Game:
             yield move.clone()
 
     def suggest_move(self) -> Tuple[CoordPair, str] | None:
+        global num_evals_per_depth
         """Suggest the next move using minimax alpha beta."""
         output = ""
-        start_time = datetime.now()
-        (score, move, avg_depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker)
-        elapsed_seconds = (datetime.now() - start_time).total_seconds()
+        start_time = time.time()
+        (score, move, depth) = alphabeta(self, 2, float('-inf'), float('inf'), self.next_player is Player.Attacker)
+        self.stats.evaluations_per_depth[depth] = num_evals_per_depth
+
+        elapsed_seconds = (time.time() - start_time)
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score}")
         output += f"Heuristic score: {score}"
-        print(f"Average recursive depth: {avg_depth:0.1f}")
-        output += f"Average recursive depth: {avg_depth:0.1f}"
+
         print(f"Evals per depth: ", end='')
         output += f"Evals per depth: "
         for k in sorted(self.stats.evaluations_per_depth.keys()):
@@ -753,15 +805,21 @@ class Game:
             output += f"{k}:{self.stats.evaluations_per_depth[k]}\n"
         print()
         total_evals = sum(self.stats.evaluations_per_depth.values())
+        print(f"Cumulative evals: {total_evals}")
         output += f"Cumulative evals: {total_evals}"
+
+        print(f"Cumulative % evals by depth: ", end='')
+        output += f"Cumulative % evals by depth: "
         for j in sorted(self.stats.evaluations_per_depth.keys()):
-            print(f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100} ", end='')
+            print(f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100}%", end='')
             output += f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100} "
+        print()
+
         if self.stats.total_seconds > 0:
-            print(f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s")
-            output += f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s"
-        print(f"Elapsed time: {elapsed_seconds:0.1f}s")
-        output += f"Elapsed time: {elapsed_seconds:0.1f}s"
+            print(f"Eval perf.: {total_evals / elapsed_seconds / 1000:0.6f}k/s")
+            output += f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.6f}k/s"
+        print(f"Elapsed time: {(elapsed_seconds):0.6f}s")
+        output += f"Elapsed time: {(elapsed_seconds):0.6f}s"
         return (move, output)
 
     def post_move_to_broker(self, move: CoordPair):
@@ -827,7 +885,8 @@ def main():
     parser.add_argument('--max_time', type=float, help='maximum search time')
     parser.add_argument('--game_type', type=str, default="manual", help='game type: auto|attacker|defender|manual')
     # To customize adversarial search type: minimax OR alpha-beta
-    parser.add_argument('--not_alpha_beta', action='store_false', help='adversarial search type: minimax(FALSE)|alpha_beta(TRUE)')  # action="store_true" means is that if the argument is given on the command line then a True value should be stored in the parser.
+    parser.add_argument('--not_alpha_beta', action='store_false',
+                        help='adversarial search type: minimax(FALSE)|alpha_beta(TRUE)')  # action="store_true" means is that if the argument is given on the command line then a True value should be stored in the parser.
     # To customize max number of turn
     parser.add_argument('--max_turns', type=int, default=100, help='max number of turns')
 
