@@ -8,6 +8,7 @@ from time import sleep
 from typing import Tuple, TypeVar, Type, Iterable, ClassVar
 import random
 import requests
+import time
 
 # maximum and minimum values for our heuristic scores (usually represents an end of game condition)
 MAX_HEURISTIC_SCORE = 2000000000
@@ -333,63 +334,20 @@ def evaluate_heuristic(node, e=0) -> int:
     # This heuristic funciton considers the move that it can either make the most attack or most repair.
     # In case there is no attack or repair available, it based on the health and distance to opponent AI as above
     else:
-        h_score = 0 # TODO
-        # UNIT_TYPE_WEIGHT = [100, 30, 10, 1, 5]  # A - V - T - P - F
-        # WEIGHT_ATTACKER_ATTACK = 5
-        # WEIGHT_ATTACKER_REPAIR = 3
-        # WEIGHT_DEFENDER_ATTACK = 3
-        # WEIGHT_DEFENDER_REPAIR = 5
-        # WEIGHT_HEALTH = 10
-        # WEIGHT_COUNT_UNIT = 5
-        # WEIGHT_DISTANCE_TO_AI = 2
-        #
-        # # Evaluate heuristic score for attcker's unit
-        # player_accumulate_health = sum(unit.health for _, unit in attacker_units)
-        # opponent_accumulate_health = sum(unit.health for _, unit in defender_units
-        #     max_attack_amt = 0
-        #     max_repair_amt = 0
-        #     for adj_coord in coord.iter_adjacent():
-        #         if node.get(adj_coord):
-        #             if node.get(adj_coord) is Player.Defender:
-        #                 enemy = node.get(adj_coord)
-        #
-        #                 self_dmg_amt = enemy.damage_amount(unit)
-        #                 enemy_dmg_amt = unit.damage_amount(enemy)
-        #                 if unit.health - self_dmg_amt > 0:
-        #                     if enemy_dmg_amt > max_attack_amt:
-        #                         max_attack_amt = enemy_dmg_amt
-        #             else:
-        #                 friend = node.get(adj_coord)
-        #                 if friend.health < 9:
-        #                     repair_amount = unit.repair_amount(friend)
-        #                     if repair_amount > 0 and repair_amount > max_repair_amt:
-        #                         max_repair_amt = repair_amount
-        #         else:
-        #             continue
-        #     if max_attack_amt == 0 or max_repair_amt == 0:
-        #         h_score += UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT
-        #         h_score += unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
-        #         # Calculate distance from unit to defender's AI
-        #         if defender_ai_position:
-        #             distance_to_defender_ai = abs(coord.row - defender_ai_position[0]) + abs(coord.col - defender_ai_position[1])
-        #         else:
-        #             distance_to_defender_ai = 0
-        #         h_score += distance_to_defender_ai * WEIGHT_DISTANCE_TO_AI
-        #     elif player_accumulate_health + max_repair_amt > opponent_accumulate_health - max_attack_amt:
-        #         h_score += max_repair_amt * WEIGHT_ATTACKER_REPAIR
-        #     else:
-        #         h_score += max_attack_amt * WEIGHT_ATTACKER_ATTACK
-        #
+        pass
     return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
 
-
+num_evals_per_depth = 0
 def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
     if depth == 0 or node.is_finished():
         # print("==============================")
         # print(node.to_string())
         # print("Score: ", evaluate_heuristic(node, 1))
-        return evaluate_heuristic(node, 1), None, 0
+        global num_evals_per_depth
+        num_evals_per_depth+=1
+        return evaluate_heuristic(node, 0), None, 0
     if maximizing_player:
+        num_evals_per_depth = 0
         v = float('-inf')
         best_move = None
         for child, move in list(generate_children(node)):
@@ -400,8 +358,9 @@ def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPa
             alpha = max(alpha, v)
             if beta <= alpha:
                 break
-        return v, best_move, depth
+        return v, best_move, _2
     else:
+        num_evals_per_depth = 0
         v = float('inf')
         best_move = None
         for child, move in list(generate_children(node)):
@@ -412,7 +371,7 @@ def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPa
             beta = min(beta, v)
             if beta <= alpha:
                 break
-        return v, best_move, depth
+        return v, best_move, _2
 
 
 def generate_children(node) -> Iterable[CoordPair]:  # Generates all children of a node
@@ -827,16 +786,18 @@ class Game:
             yield move.clone()
 
     def suggest_move(self) -> Tuple[CoordPair, str] | None:
+        global num_evals_per_depth
         """Suggest the next move using minimax alpha beta."""
         output = ""
-        start_time = datetime.now()
-        (score, move, avg_depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker)
-        elapsed_seconds = (datetime.now() - start_time).total_seconds()
+        start_time = time.time()
+        (score, move, depth) = alphabeta(self, 2, float('-inf'), float('inf'), self.next_player is Player.Attacker)
+        self.stats.evaluations_per_depth[depth] = num_evals_per_depth
+
+        elapsed_seconds = (time.time() - start_time)
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score}")
         output += f"Heuristic score: {score}"
-        print(f"Average recursive depth: {avg_depth:0.1f}")
-        output += f"Average recursive depth: {avg_depth:0.1f}"
+
         print(f"Evals per depth: ", end='')
         output += f"Evals per depth: "
         for k in sorted(self.stats.evaluations_per_depth.keys()):
@@ -844,15 +805,21 @@ class Game:
             output += f"{k}:{self.stats.evaluations_per_depth[k]}\n"
         print()
         total_evals = sum(self.stats.evaluations_per_depth.values())
+        print(f"Cumulative evals: {total_evals}")
         output += f"Cumulative evals: {total_evals}"
+
+        print(f"Cumulative % evals by depth: ", end='')
+        output += f"Cumulative % evals by depth: "
         for j in sorted(self.stats.evaluations_per_depth.keys()):
-            print(f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100} ", end='')
+            print(f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100}%", end='')
             output += f"{j}:{self.stats.evaluations_per_depth[j] / total_evals * 100} "
+        print()
+
         if self.stats.total_seconds > 0:
-            print(f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s")
-            output += f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.1f}k/s"
-        print(f"Elapsed time: {elapsed_seconds:0.1f}s")
-        output += f"Elapsed time: {elapsed_seconds:0.1f}s"
+            print(f"Eval perf.: {total_evals / elapsed_seconds / 1000:0.6f}k/s")
+            output += f"Eval perf.: {total_evals / self.stats.total_seconds / 1000:0.6f}k/s"
+        print(f"Elapsed time: {(elapsed_seconds):0.6f}s")
+        output += f"Elapsed time: {(elapsed_seconds):0.6f}s"
         return (move, output)
 
     def post_move_to_broker(self, move: CoordPair):
