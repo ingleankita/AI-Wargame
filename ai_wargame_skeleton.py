@@ -325,7 +325,7 @@ def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPa
         return v, best_move, depth
 
 
-def generate_children(node) -> Iterable[CoordPair]:  # Generates all children of a node
+def generate_children(node) -> Iterable[Tuple[Game, CoordPair]]:  # Generates all children of a node
     cells = CoordPair(Coord(0, 0), Coord(4, 4))  # Get range of start and end coordinates
     for i in cells.iter_rectangle():
         for j in cells.iter_rectangle():
@@ -739,13 +739,13 @@ class Game:
         """Suggest the next move using minimax alpha beta."""
         output = ""
         start_time = datetime.now()
-        (score, move, avg_depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker)
+        (score, move, avg_depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker) # needs to be changed
         elapsed_seconds = (datetime.now() - start_time).total_seconds()
         self.stats.total_seconds += elapsed_seconds
         print(f"Heuristic score: {score}")
         output += f"Heuristic score: {score}"
-        print(f"Average recursive depth: {avg_depth:0.1f}")
-        output += f"Average recursive depth: {avg_depth:0.1f}"
+        # print(f"Average recursive depth: {avg_depth:0.1f}")
+        # output += f"Average recursive depth: {avg_depth:0.1f}"
         print(f"Evals per depth: ", end='')
         output += f"Evals per depth: "
         for k in sorted(self.stats.evaluations_per_depth.keys()):
