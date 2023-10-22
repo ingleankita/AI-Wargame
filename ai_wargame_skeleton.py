@@ -338,9 +338,7 @@ def evaluate_e1(node) -> int:
 
 def evaluate_e2(node) -> int:
     """Evaluate heuristic value of state depending on choice of e2"""
-    # This heuristic funciton considers the move that it can either make the most attack or most repair.
-    # In case there is no attack or repair available, it based on the health and distance to opponent AI as above
-    e1 = evaluate_e1(node)
+    # Consider how spaced-out all attacker's unit is compared to defender's units
     h_score = 0
 
     # Get player units and counts
@@ -365,7 +363,7 @@ def evaluate_e2(node) -> int:
                 distance = abs(coord1.row - coord2.row) + abs(coord1.col - coord2.col)
                 defender_unit_space_out += distance
 
-    # Favor the attacker by emphasizing attacker_unit_density over defender_unit_density
+    # The more spaced-out attacker units -> the more advantage. The more spaced-out defender units -> the less advantage, since it's cannot repair
     h_score = attack_unit_space_out - defender_unit_space_out
 
     return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
