@@ -1,4 +1,4 @@
-Max time (seconds): 200.0
+Max time (seconds): 20.0
 Maximum number of turns: 100
 Alpha-Beta: True
 Play mode: GameType.CompVsComp
@@ -15,25 +15,9 @@ C: dF9  .   .   .  aP9
 D:  .   .   .  aF9 aV9 
 E:  .   .  aP9 aV9 aA9 
 
-<<<<<<< HEAD
-The move is not valid! Try again.
-
-Next player: Attacker
-Turns played: 0
-Turn #1
-
-    0   1   2   3   4  
-A: dA9 dT9 dF9  .   .  
-B: dT9 dP9  .   .   .  
-C: dF9  .   .   .  aP9 
-D:  .   .   .  aF9 aV9 
-E:  .   .  aP9 aV9 aA9 
-
-Player Attacker: move from C4 to C3
-=======
-Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.449974k/sElapsed time: 0.031113sComputer Attacker: move from C4 to B4
->>>>>>> c6b0626e6c2b96feef5d281db019deb1fe12c270
+Heuristic score: 0Evals per depth: 1:12
+Cumulative evals: 12Cumulative % evals by depth: 1:100.0 Eval perf.: 4.906097k/sElapsed time: 0.002446sComputer Attacker: self-destruct at E4
+self-destructed for 6 total damage
 
 Next player: Defender
 Turns played: 1
@@ -41,39 +25,9 @@ Turn #2
 
     0   1   2   3   4  
 A: dA9 dT9 dF9  .   .  
-<<<<<<< HEAD
 B: dT9 dP9  .   .   .  
-C: dF9  .   .  aP9  .  
-D:  .   .   .  aF9 aV9 
-E:  .   .  aP9 aV9 aA9 
+C: dF9  .   .   .  aP9 
+D:  .   .   .  aF7 aV7 
+E:  .   .  aP9 aV7  .  
 
-Heuristic score: 0Evals per depth: Cumulative evals: 0Eval perf.: 0.0k/sElapsed time: 0.0sComputer Defender: move from A2 to A3
-=======
-B: dT9 dP9  .   .  aP9 
-C: dF9  .   .   .   .  
-D:  .   .   .  aF9 aV9 
-E:  .   .  aP9 aV9 aA9 
-
-Heuristic score: 9999Evals per depth: 0:1
-Cumulative evals: 1Cumulative % evals by depth: 0:100.0 Eval perf.: 0.017297k/sElapsed time: 0.026701sComputer Defender: self-destruct at A0
-self-destructed for 6 total damage
->>>>>>> c6b0626e6c2b96feef5d281db019deb1fe12c270
-
-Next player: Attacker
-Turns played: 2
-Turn #3
-
-    0   1   2   3   4  
-<<<<<<< HEAD
-A: dA9 dT9  .  dF9  .  
-B: dT9 dP9  .   .   .  
-C: dF9  .   .  aP9  .  
-=======
-A:  .  dT7 dF9  .   .  
-B: dT7 dP7  .   .  aP9 
-C: dF9  .   .   .   .  
->>>>>>> c6b0626e6c2b96feef5d281db019deb1fe12c270
-D:  .   .   .  aF9 aV9 
-E:  .   .  aP9 aV9 aA9 
-
-Attacker wins in 2 turns!
+Defender wins in 1 turns!
