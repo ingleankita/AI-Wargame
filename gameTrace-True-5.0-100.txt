@@ -17,7 +17,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.269171k/sElapsed time: 0.052011sComputer Attacker: move from C4 to B4
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.264092k/sElapsed time: 0.053012sComputer Attacker: move from C4 to B4
 
 Next player: Defender
 Turns played: 1
@@ -31,7 +31,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 0Evals per depth: 0:13
-Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.124972k/sElapsed time: 0.052012sComputer Defender: move from A2 to A3
+Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.100752k/sElapsed time: 0.076017sComputer Defender: move from A2 to A3
 
 Next player: Attacker
 Turns played: 2
@@ -45,7 +45,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.086187k/sElapsed time: 0.070016sComputer Attacker: move from B4 to A4
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.080627k/sElapsed time: 0.057013sComputer Attacker: move from B4 to A4
 
 Next player: Defender
 Turns played: 3
@@ -59,7 +59,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 0Evals per depth: 0:13
-Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.057509k/sElapsed time: 0.052011sComputer Defender: move from A1 to A2
+Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.054610k/sElapsed time: 0.052011sComputer Defender: move from A1 to A2
 
 Next player: Attacker
 Turns played: 4
@@ -73,7 +73,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.050348k/sElapsed time: 0.052012sComputer Attacker: attack from A4 to A3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.048265k/sElapsed time: 0.052012sComputer Attacker: attack from A4 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -88,7 +88,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 0Evals per depth: 0:16
-Cumulative evals: 16Cumulative % evals by depth: 0:100.0 Eval perf.: 0.046501k/sElapsed time: 0.066014sComputer Defender: move from A0 to A1
+Cumulative evals: 16Cumulative % evals by depth: 0:100.0 Eval perf.: 0.045060k/sElapsed time: 0.065015sComputer Defender: move from A0 to A1
 
 Next player: Attacker
 Turns played: 6
@@ -102,7 +102,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.035346k/sElapsed time: 0.052010sComputer Attacker: attack from A4 to A3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.034390k/sElapsed time: 0.052012sComputer Attacker: attack from A4 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -117,7 +117,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 0Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.032320k/sElapsed time: 0.068016sComputer Defender: repair from A2 to A3
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.029993k/sElapsed time: 0.093021sComputer Defender: repair from A2 to A3
 repaired 2 health points
 
 Next player: Attacker
@@ -132,7 +132,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.026065k/sElapsed time: 0.073016sComputer Attacker: attack from A4 to A3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.025357k/sElapsed time: 0.052012sComputer Attacker: attack from A4 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -147,7 +147,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 0Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.025078k/sElapsed time: 0.061014sComputer Defender: repair from A2 to A3
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.024504k/sElapsed time: 0.060013sComputer Defender: repair from A2 to A3
 repaired 1 health points
 
 Next player: Attacker
@@ -162,7 +162,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.021600k/sElapsed time: 0.050012sComputer Attacker: attack from A4 to A3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.021111k/sElapsed time: 0.051011sComputer Attacker: attack from A4 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -177,7 +177,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 0Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.021152k/sElapsed time: 0.061013sComputer Defender: repair from A2 to A3
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.020685k/sElapsed time: 0.062014sComputer Defender: repair from A2 to A3
 repaired 1 health points
 
 Next player: Attacker
@@ -192,7 +192,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.018345k/sElapsed time: 0.054012sComputer Attacker: attack from A4 to A3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.017650k/sElapsed time: 0.068016sComputer Attacker: attack from A4 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -207,7 +207,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 0Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.018222k/sElapsed time: 0.060015sComputer Defender: repair from A2 to A3
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.017159k/sElapsed time: 0.081018sComputer Defender: repair from A2 to A3
 repaired 1 health points
 
 Next player: Attacker
@@ -222,7 +222,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.015762k/sElapsed time: 0.065014sComputer Attacker: attack from A4 to A3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.015099k/sElapsed time: 0.053013sComputer Attacker: attack from A4 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -237,7 +237,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 0Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.015786k/sElapsed time: 0.062014sComputer Defender: repair from A2 to A3
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.015118k/sElapsed time: 0.065013sComputer Defender: repair from A2 to A3
 repaired 1 health points
 
 Next player: Attacker
@@ -252,7 +252,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.013969k/sElapsed time: 0.052012sComputer Attacker: attack from A4 to A3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.013343k/sElapsed time: 0.057012sComputer Attacker: attack from A4 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -267,7 +267,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.014121k/sElapsed time: 0.060013sComputer Defender: attack from A3 to A4
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.013510k/sElapsed time: 0.061014sComputer Defender: attack from A3 to A4
 combat damage: to source = 1, to target = 1
 
 Next player: Attacker
@@ -282,7 +282,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.012587k/sElapsed time: 0.050011sComputer Attacker: move from D3 to C3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.012045k/sElapsed time: 0.052011sComputer Attacker: move from D3 to C3
 
 Next player: Defender
 Turns played: 19
@@ -296,7 +296,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.012807k/sElapsed time: 0.059014sComputer Defender: repair from A2 to A3
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.012084k/sElapsed time: 0.079017sComputer Defender: repair from A2 to A3
 repaired 2 health points
 
 Next player: Attacker
@@ -311,7 +311,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.011959k/sElapsed time: 0.083018sComputer Attacker: move from C3 to B3
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.011527k/sElapsed time: 0.060014sComputer Attacker: move from C3 to B3
 
 Next player: Defender
 Turns played: 21
@@ -325,7 +325,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.011422k/sElapsed time: 0.059014sComputer Defender: move from A2 to B2
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.011011k/sElapsed time: 0.061015sComputer Defender: move from A2 to B2
 
 Next player: Attacker
 Turns played: 22
@@ -339,7 +339,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.010938k/sElapsed time: 0.058013sComputer Attacker: attack from B3 to A3
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.010554k/sElapsed time: 0.059013sComputer Attacker: attack from B3 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -354,7 +354,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:17
-Cumulative evals: 17Cumulative % evals by depth: 0:100.0 Eval perf.: 0.011770k/sElapsed time: 0.073016sComputer Defender: move from A1 to A2
+Cumulative evals: 17Cumulative % evals by depth: 0:100.0 Eval perf.: 0.011384k/sElapsed time: 0.072016sComputer Defender: move from A1 to A2
 
 Next player: Attacker
 Turns played: 24
@@ -368,7 +368,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -9999Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.009965k/sElapsed time: 0.061014sComputer Attacker: attack from B3 to A3
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.009522k/sElapsed time: 0.082017sComputer Attacker: attack from B3 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -383,7 +383,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.009492k/sElapsed time: 0.075017sComputer Defender: attack from A3 to A4
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.009167k/sElapsed time: 0.061014sComputer Defender: attack from A3 to A4
 combat damage: to source = 1, to target = 1
 
 Next player: Attacker
@@ -398,7 +398,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -10002Evals per depth: 0:13
-Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007993k/sElapsed time: 0.046010sComputer Attacker: attack from B3 to A3
+Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007723k/sElapsed time: 0.047011sComputer Attacker: attack from B3 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -413,7 +413,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.008331k/sElapsed time: 0.054013sComputer Defender: attack from A3 to B3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.008049k/sElapsed time: 0.056012sComputer Defender: attack from A3 to B3
 combat damage: to source = 1, to target = 1
 
 Next player: Attacker
@@ -428,7 +428,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -10002Evals per depth: 0:13
-Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007526k/sElapsed time: 0.047010sComputer Attacker: attack from B3 to A3
+Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007277k/sElapsed time: 0.047011sComputer Attacker: attack from B3 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -443,7 +443,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007850k/sElapsed time: 0.056012sComputer Defender: attack from A3 to B3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007595k/sElapsed time: 0.057013sComputer Defender: attack from A3 to B3
 combat damage: to source = 1, to target = 1
 
 Next player: Attacker
@@ -458,7 +458,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -10002Evals per depth: 0:13
-Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007102k/sElapsed time: 0.047010sComputer Attacker: attack from B3 to A3
+Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006762k/sElapsed time: 0.079017sComputer Attacker: attack from B3 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -473,7 +473,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -6Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007410k/sElapsed time: 0.059013sComputer Defender: attack from B2 to B3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007073k/sElapsed time: 0.057014sComputer Defender: attack from B2 to B3
 combat damage: to source = 1, to target = 1
 
 Next player: Attacker
@@ -488,7 +488,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -10002Evals per depth: 0:13
-Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006662k/sElapsed time: 0.062014sComputer Attacker: attack from B3 to A3
+Cumulative evals: 13Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006412k/sElapsed time: 0.048012sComputer Attacker: attack from B3 to A3
 combat damage: to source = 1, to target = 1
 
 Next player: Defender
@@ -503,7 +503,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006998k/sElapsed time: 0.049011sComputer Defender: move from A2 to A3
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006742k/sElapsed time: 0.049010sComputer Defender: move from A2 to A3
 
 Next player: Attacker
 Turns played: 34
@@ -517,7 +517,7 @@ D:  .   .   .   .  aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -10002Evals per depth: 0:10
-Cumulative evals: 10Cumulative % evals by depth: 0:100.0 Eval perf.: 0.004925k/sElapsed time: 0.030008sComputer Attacker: move from D4 to C4
+Cumulative evals: 10Cumulative % evals by depth: 0:100.0 Eval perf.: 0.004747k/sElapsed time: 0.030006sComputer Attacker: move from D4 to C4
 
 Next player: Defender
 Turns played: 35
@@ -531,7 +531,7 @@ D:  .   .   .   .   .
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:15
-Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.007200k/sElapsed time: 0.053011sComputer Defender: move from A3 to A4
+Cumulative evals: 15Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006946k/sElapsed time: 0.053013sComputer Defender: move from A3 to A4
 
 Next player: Attacker
 Turns played: 36
@@ -545,7 +545,7 @@ D:  .   .   .   .   .
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -10002Evals per depth: 0:12
-Cumulative evals: 12Cumulative % evals by depth: 0:100.0 Eval perf.: 0.005651k/sElapsed time: 0.040009sComputer Attacker: move from C4 to B4
+Cumulative evals: 12Cumulative % evals by depth: 0:100.0 Eval perf.: 0.005466k/sElapsed time: 0.036008sComputer Attacker: move from C4 to B4
 
 Next player: Defender
 Turns played: 37
@@ -559,7 +559,7 @@ D:  .   .   .   .   .
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: -3Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006459k/sElapsed time: 0.044009sComputer Defender: move from B0 to A0
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006193k/sElapsed time: 0.065015sComputer Defender: move from B0 to A0
 
 Next player: Attacker
 Turns played: 38
@@ -573,7 +573,7 @@ D:  .   .   .   .   .
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 9996Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006365k/sElapsed time: 0.032011sComputer Attacker: attack from B4 to A4
+Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.006094k/sElapsed time: 0.037008sComputer Attacker: attack from B4 to A4
 combat damage: to source = 3, to target = 9
 
 Next player: Defender
