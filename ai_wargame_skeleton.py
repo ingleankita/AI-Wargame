@@ -379,6 +379,7 @@ def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPa
         v = float('-inf')
         best_move = None
         for child, move in list(generate_children(node)):
+            best_move = move
             score, _1, _2 = alphabeta(child, depth - 1, alpha, beta, False)
             if score > v:
                 v = score
@@ -392,6 +393,7 @@ def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPa
         v = float('inf')
         best_move = None
         for child, move in list(generate_children(node)):
+            best_move = move
             score, _1, _2 = alphabeta(child, depth - 1, alpha, beta, True)
             if score < v:
                 v = score
