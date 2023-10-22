@@ -247,15 +247,43 @@ class Stats:
 
 ##############################################################################################################
 
+def evaluate_e0(node) -> int:
+    """Evaluate heuristic value of state depending on choice of e0"""
+    # This function consider the total units a player currently has on the board. All units are of equal weight except for AI
 
-def evaluate_heuristic(node, e=0) -> int:
-    """Evaluate heuristic value of state depending on choice of e0, e1, e2 """
-    # Initialize a heuristic score
     h_score = 0
 
     # Get Player unit and count
     attacker_unit_type = [0, 0, 0, 0, 0]  # Count of Attacker's unit types
     defender_unit_type = [0, 0, 0, 0, 0]  # Count of Defender's unit types
+
+    # Count the number of units for each unit type
+    for row in range(len(node.board)):
+        for col in range(len(node.board[row])):
+            if node.board[row][col]:
+                unit = node.board[row][col]
+                # For Attacker
+                if unit.player == Player.Attacker:
+                    attacker_unit_type[unit.type.value] += 1
+                # For Defender
+                elif unit.player == Player.Defender:
+                    defender_unit_type[unit.type.value] += 1
+
+    attacker = 3 * attacker_unit_type[1] + 3 * attacker_unit_type[2] + 3 * attacker_unit_type[3] + 3 * \
+               attacker_unit_type[4] + 9999 * attacker_unit_type[0]
+    defender = 3 * defender_unit_type[1] + 3 * defender_unit_type[2] + 3 * defender_unit_type[3] + 3 * \
+               defender_unit_type[4] + 9999 * defender_unit_type[0]
+
+    h_score = attacker - defender
+    return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
+
+def evaluate_e1(node) -> int:
+    """Evaluate heuristic value of state depending on choice of e1"""
+    # This heuristic considers 4 features: a player's number of unit, unit health, and unit proximity to the opponent's AI.
+    # Each feature is assigned with a weight: health > number of unit > proximity to opponent AI
+    # Each unit type also has its own weight
+
+    h_score = 0
 
     # Get player units and counts
     attacker_units = list(node.player_units(Player.Attacker))
@@ -274,78 +302,80 @@ def evaluate_heuristic(node, e=0) -> int:
                     if unit.player == Player.Defender:
                         defender_ai_position = (row, col)
 
-    # Heuristic function e0()
-    # This function consider the total units a player currently has on the board. All units are of equal weight except for AI
-    if e == 0:
 
-        # Count the number of units for each unit type
-        for row in range(len(node.board)):
-            for col in range(len(node.board[row])):
-                if node.board[row][col]:
-                    unit = node.board[row][col]
-                    # For Attacker
-                    if unit.player == Player.Attacker:
-                        attacker_unit_type[unit.type.value] += 1
-                    # For Defender
-                    elif unit.player == Player.Defender:
-                        defender_unit_type[unit.type.value] += 1
+    UNIT_TYPE_WEIGHT = [9999, 500, 500, 20, 100]  # A - V - T - P - F
+    WEIGHT_HEALTH = 5  # Total health of all units
+    WEIGHT_COUNT_UNIT = 3  # Total number of units
+    WEIGHT_DISTANCE_TO_AI = 2  # Total distance from all units to opponent's AI
 
-        attacker = 3 * attacker_unit_type[1] + 3 * attacker_unit_type[2] + 3 * attacker_unit_type[3] + 3 * \
-                   attacker_unit_type[4] + 9999 * attacker_unit_type[0]
-        defender = 3 * defender_unit_type[1] + 3 * defender_unit_type[2] + 3 * defender_unit_type[3] + 3 * \
-                   defender_unit_type[4] + 9999 * defender_unit_type[0]
+    # Evaluate heuristic score for attcker's unit
+    for coord, unit in attacker_units:
+        # Calculate the estimated distance from unit to defender's AI = difference in row + difference in column
+        if defender_ai_position:
+            distance_to_defender_ai = abs(coord.row - defender_ai_position[0]) + abs(
+                coord.col - defender_ai_position[1])
+        else:
+            distance_to_defender_ai = 0
+        # The greater the distance -> the further attacker's units is from defender's AI, the less advantage it has -> Minus distance to h_score
+        h_score -= distance_to_defender_ai * WEIGHT_DISTANCE_TO_AI
+        h_score += UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT
+        h_score += unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
 
-        h_score = attacker - defender
+    # Evaluate heuristic score for defender's unit
+    for coord, unit in defender_units:
+        # Calculate the estimated distance from unit to Attacker's AI = difference in row + difference in column
+        if attacker_ai_position:
+            distance_to_attacker_ai = abs(coord.row - attacker_ai_position[0]) + abs(
+                coord.col - attacker_ai_position[1])
+        else:
+            distance_to_attacker_ai = 0
+        # The greater the distance -> the further defender's units is from attaker's AI, the more avantage it has -> Plus distance to h_score
+        h_score += distance_to_attacker_ai * WEIGHT_DISTANCE_TO_AI
+        h_score -= UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT
+        h_score -= unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH
 
-    # Heuristic function e(1)
-    # This heuristic considers a player's number of unit, unit health, and unit proximity to the opponent's AI. Each feature is assigned with a weight: health > number of unit > proximity to opponent AI
-    # And to consider the importance of each unit type, the features above are calculated in multiplication of unit_type_weight
-    elif e == 1:
+    return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
 
-        UNIT_TYPE_WEIGHT = [9999, 500, 500, 20, 100]  # A - V - T - P - F
-        WEIGHT_HEALTH = 5
-        WEIGHT_COUNT_UNIT = 3
-        WEIGHT_DISTANCE_TO_AI = 2
-
-        # Evaluate heuristic score for attcker's unit
-        for coord, unit in attacker_units:
-            h_score += UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT # 300
-            h_score += unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH # 4500
-            # Calculate distance from unit to defender's AI
-            if defender_ai_position:
-                distance_to_defender_ai = abs(coord.row - defender_ai_position[0]) + abs(coord.col - defender_ai_position[1])
-            else:
-                distance_to_defender_ai = 0
-            h_score -= distance_to_defender_ai*WEIGHT_DISTANCE_TO_AI
-
-        # Evaluate heuristic score for defender's unit
-        for coord, unit in defender_units:
-            h_score -= UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_COUNT_UNIT # -300
-            h_score -= unit.health * UNIT_TYPE_WEIGHT[unit.type.value] * WEIGHT_HEALTH # -4500
-            # Calculate distance from unit to attacker's AI
-            if attacker_ai_position:
-                distance_to_attacker_ai = abs(coord.row - attacker_ai_position[0]) + abs(
-                    coord.col - attacker_ai_position[1])
-            else:
-                distance_to_attacker_ai = 0
-            h_score += distance_to_attacker_ai*WEIGHT_DISTANCE_TO_AI
-
-    # Heuristic function e2()
+def evaluate_e2(node) -> int:
+    """Evaluate heuristic value of state depending on choice of e2"""
     # This heuristic funciton considers the move that it can either make the most attack or most repair.
     # In case there is no attack or repair available, it based on the health and distance to opponent AI as above
-    else:
-        pass
+    e1 = evaluate_e1(node)
+    h_score = 0
+
+    # Get player units and counts
+    attacker_units = list(node.player_units(Player.Attacker))
+    defender_units = list(node.player_units(Player.Defender))
+
+    # Estimate the total distance between all attacker units i.e how spaced-out the units is. The more spaced-out the attacker's units the more favorable - more change of attack
+    # Method: summation of total distance between all pairs of attacker units
+    attack_unit_space_out = 0
+    for coord1, _ in attacker_units:
+        for coord2, _ in attacker_units:
+            if coord1 != coord2:  # Avoid comparing the same unit to itself
+                distance = abs(coord1.row - coord2.row) + abs(coord1.col - coord2.col)
+                attack_unit_space_out += distance
+
+    # Estimate the total distance between all defender units i.e how spaced-out the units is. The more spaced-out the attacker's units the less favorable - less chance of repair
+    # Method: summation of total distance between all pairs of attacker units
+    defender_unit_space_out = 0
+    for coord1, _ in defender_units:
+        for coord2, _ in defender_units:
+            if coord1 != coord2:  # Avoid comparing the same unit to itself
+                distance = abs(coord1.row - coord2.row) + abs(coord1.col - coord2.col)
+                defender_unit_space_out += distance
+
+    # Favor the attacker by emphasizing attacker_unit_density over defender_unit_density
+    h_score = attack_unit_space_out - defender_unit_space_out
+
     return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
 
 num_evals_per_depth = 0
 def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
     if depth == 0 or node.is_finished():
-        # print("==============================")
-        # print(node.to_string())
-        # print("Score: ", evaluate_heuristic(node, 1))
         global num_evals_per_depth
-        num_evals_per_depth+=1
-        return evaluate_heuristic(node, 0), None, 0
+        num_evals_per_depth += 1
+        return evaluate_e2(node), None, 0
     if maximizing_player:
         num_evals_per_depth = 0
         v = float('-inf')
@@ -790,7 +820,7 @@ class Game:
         """Suggest the next move using minimax alpha beta."""
         output = ""
         start_time = time.time()
-        (score, move, depth) = alphabeta(self, 2, float('-inf'), float('inf'), self.next_player is Player.Attacker)
+        (score, move, depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker)
         self.stats.evaluations_per_depth[depth] = num_evals_per_depth
 
         elapsed_seconds = (time.time() - start_time)
