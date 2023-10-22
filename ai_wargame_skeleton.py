@@ -339,7 +339,7 @@ class Game:
             return False
 
         # Validate if dst is only up, down, left, or right and not diagonal
-        if (coords.dst not in adj_coords):
+        if (coords.dst not in adj_coords and coords.dst != coords.src):
             return False
 
         # Player cannot pick up unit at src if unit is None
@@ -376,7 +376,7 @@ class Game:
                     # If the unit type is V or T, it can only move to adjacent dst
                     # If dst is empty, unit can move
                     # If dst is occupied, it can also move, but the move is counted as repair or attack
-                    return (coords.dst in adj_coords)
+                    return (coords.dst in adj_coords or coords.dst == coords.src)
 
             # if unit at src is Defender's:
             if unit.player is Player.Defender:
@@ -408,7 +408,7 @@ class Game:
                     # If the unit type is V or T, it can only move to adjacent dst
                     # If dst is empty, it can move
                     # If dst is occupied, it can move but the move count as repair or attack
-                    return (coords.dst in adj_coords)
+                    return (coords.dst in adj_coords or coords.dst == coords.src)
         # If unit at src is not None & user cannot pick up units that does not belong to them
         else:
             return False
