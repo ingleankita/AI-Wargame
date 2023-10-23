@@ -13,7 +13,7 @@ import time
 # maximum and minimum values for our heuristic scores (usually represents an end of game condition)
 MAX_HEURISTIC_SCORE = 2000000000
 MIN_HEURISTIC_SCORE = -2000000000
-
+num_evals_per_depth = 0
 
 class UnitType(Enum):
     """Every unit type."""
@@ -368,9 +368,6 @@ def evaluate_e2(node) -> int:
     h_score = attack_unit_space_out - defender_unit_space_out
 
     return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
-
-
-num_evals_per_depth = 0
 
 
 def minimax(node, depth, maximizing_player) -> Tuple[int, CoordPair, float]:
