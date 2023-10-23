@@ -248,7 +248,7 @@ class Stats:
 ##############################################################################################################
 
 def evaluate_e0(node) -> int:
-    """Evaluate heuristic value of state depending on choice of e0"""
+    """Evaluate heuristic value of state depending on choice of e0 TODO: Heuristics"""
     # This function consider the total units a player currently has on the board. All units are of equal weight except for AI
 
     h_score = 0
@@ -277,6 +277,7 @@ def evaluate_e0(node) -> int:
     h_score = attacker - defender
     return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
 
+
 def evaluate_e1(node) -> int:
     """Evaluate heuristic value of state depending on choice of e1"""
     # This heuristic considers 4 features: a player's number of unit, unit health, and unit proximity to the opponent's AI.
@@ -301,7 +302,6 @@ def evaluate_e1(node) -> int:
                         attacker_ai_position = (row, col)
                     if unit.player == Player.Defender:
                         defender_ai_position = (row, col)
-
 
     UNIT_TYPE_WEIGHT = [9999, 500, 500, 20, 100]  # A - V - T - P - F
     WEIGHT_HEALTH = 5  # Total health of all units
@@ -336,6 +336,7 @@ def evaluate_e1(node) -> int:
 
     return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
 
+
 def evaluate_e2(node) -> int:
     """Evaluate heuristic value of state depending on choice of e2"""
     # Consider how spaced-out all attacker's unit is compared to defender's units
@@ -368,12 +369,43 @@ def evaluate_e2(node) -> int:
 
     return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
 
+
 num_evals_per_depth = 0
-def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
+
+
+def minimax(node, depth, maximizing_player) -> Tuple[int, CoordPair, float]:
+    """TODO: Minimax"""
     if depth == 0 or node.is_finished():
         global num_evals_per_depth
         num_evals_per_depth += 1
-        return evaluate_e2(node), None, 0
+        return evaluate_e0(node), None, 0
+    if maximizing_player:
+        num_evals_per_depth = 0
+        v = float('-inf')
+        best_move = None
+        for child, move in list(generate_children(node)):
+            score, _1, _2 = minimax(child, depth - 1, False)
+            if score > v:
+                v = score
+                best_move = move
+        return v, best_move, _2
+    else:
+        num_evals_per_depth = 0
+        v = float('inf')
+        for child, move in list(generate_children(node)):
+            score, _1, _2 = minimax(child, depth - 1, False)
+            if score < v:
+                v = score
+                best_move = move
+        return v, best_move, _2
+
+
+def alphabeta(node, depth, alpha, beta, maximizing_player) -> Tuple[int, CoordPair, float]:
+    """TODO: Alpha-Beta"""
+    if depth == 0 or node.is_finished():
+        global num_evals_per_depth
+        num_evals_per_depth += 1
+        return evaluate_e0(node), None, 0
     if maximizing_player:
         num_evals_per_depth = 0
         v = float('-inf')
@@ -508,7 +540,7 @@ class Game:
             self.remove_dead(coord)
 
     def is_valid_move(self, coords: CoordPair) -> bool:
-        """Validate a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
+        """Validate a move expressed as a CoordPair."""
 
         # Check if unit is engaged in combat
         adj_coords = list(coords.src.iter_adjacent())
@@ -527,8 +559,13 @@ class Game:
         if not self.is_valid_coord(coords.src) or not self.is_valid_coord(coords.dst):
             return False
 
+        # Validate if dst is only up, down, left, or right and not diagonal
+        if (coords.dst not in adj_coords and coords.dst != coords.src):
+            return False
+
         # Validate if dst is only up, down, left, or right or in place and not diagonal
         if coords.dst not in adj_coords and coords.src != coords.dst:
+
             return False
 
         # Player cannot pick up unit at src if unit is None
@@ -564,8 +601,12 @@ class Game:
                 else:
                     # If the unit type is V or T, it can only move to adjacent dst
                     # If dst is empty, unit can move
+                    # If dst is occupied, it can also move, but the move is counted as repair or attack
+                    return (coords.dst in adj_coords or coords.dst == coords.src)
+
                     # If dst is occupied, it can also move, but the move is counted as repair or attack or self-destruct
                     return True
+
 
             # if unit at src is Defender's:
             if unit.player is Player.Defender:
@@ -596,14 +637,19 @@ class Game:
                 else:
                     # If the unit type is V or T, it can only move to adjacent dst
                     # If dst is empty, it can move
+
+                    # If dst is occupied, it can move but the move count as repair or attack
+                    return (coords.dst in adj_coords or coords.dst == coords.src)
+
                     # If dst is occupied, it can move but the move count as repair or attack or self-destruct
                     return True
+
         # If unit at src is not None & user cannot pick up units that does not belong to them
         else:
             return False
 
     def perform_move(self, coords: CoordPair) -> Tuple[bool, str]:
-        """Validate and perform a move expressed as a CoordPair. TODO: WRITE MISSING CODE!!!"""
+        """Validate and perform a move expressed as a CoordPair."""
 
         row_src = coords.src.row_string()
         row_dst = coords.dst.row_string()
@@ -767,9 +813,10 @@ class Game:
                     return "The move is not valid! Try again."
 
         return potential_attack
-    def computer_turn(self) -> [CoordPair, str] | None:
+
+    def computer_turn(self, is_minimax) -> [CoordPair, str] | None:
         """Computer plays a move."""
-        (mv, output) = self.suggest_move()
+        (mv, output) = self.suggest_move(is_minimax)
         file_output = output
         if mv is not None:
             (success, result) = self.perform_move(mv)
@@ -815,12 +862,19 @@ class Game:
             move.dst = src
             yield move.clone()
 
-    def suggest_move(self) -> Tuple[CoordPair, str] | None:
+    def suggest_move(self, is_minimax) -> Tuple[CoordPair, str] | None:
+        """TODO: Adding minimax alpha beta"""
         global num_evals_per_depth
         """Suggest the next move using minimax alpha beta."""
         output = ""
         start_time = time.time()
-        (score, move, depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker)
+
+        if(is_minimax):
+            print("Minimax")
+            (score, move, depth) = minimax(self, 1, self.next_player is Player.Attacker)
+        else:
+            print("Alpha-Beta")
+            (score, move, depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker)
         self.stats.evaluations_per_depth[depth] = num_evals_per_depth
 
         elapsed_seconds = (time.time() - start_time)
@@ -951,18 +1005,20 @@ def main():
     # create a new game
     game = Game(options=options)
 
+    print(f"Max depth: {options.max_depth}")
     print(f"Max time (seconds): {options.max_time}")
     print(f"Maximum number of turns: {options.max_turns}")
     print(f"Alpha-Beta: {options.alpha_beta}")
     print(f"Play mode: {game.options.game_type}")
-    print(f"Heuristic: None")
+    print(f"Heuristic: e0")
 
     f = open("gameTrace-{}-{}-{}.txt".format(Options.alpha_beta, Options.max_time, Options.max_turns), "w")
+    print(f"Max depth: {options.max_depth}", file=f)
     print(f"Max time (seconds): {options.max_time}", file=f)
     print(f"Maximum number of turns: {options.max_turns}", file=f)
     print(f"Alpha-Beta: {options.alpha_beta}", file=f)
     print(f"Play mode: {game.options.game_type}", file=f)
-    print(f"Heuristic: None\n", file=f)
+    print(f"Heuristic: e0\n", file=f)
 
     # the main game loop
     while True:
@@ -986,7 +1042,7 @@ def main():
             print(f"{result}\n", file=f)
         else:
             player = game.next_player
-            (move, result) = game.computer_turn()
+            (move, result) = game.computer_turn(not args.not_alpha_beta)
             print(f"{result}\n", file=f)
             if move is not None:
                 game.post_move_to_broker(move)
