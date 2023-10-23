@@ -866,10 +866,10 @@ class Game:
 
         if(is_minimax):
             print("Minimax")
-            (score, move, depth) = minimax(self, 3, self.next_player is Player.Attacker)
+            (score, move, depth) = minimax(self, 1, self.next_player is Player.Attacker)
         else:
             print("Alpha-Beta")
-            (score, move, depth) = alphabeta(self, 3, float('-inf'), float('inf'), self.next_player is Player.Attacker)
+            (score, move, depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker)
         self.stats.evaluations_per_depth[depth] = num_evals_per_depth
 
         elapsed_seconds = (time.time() - start_time)
