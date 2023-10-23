@@ -13,7 +13,9 @@ import time
 # maximum and minimum values for our heuristic scores (usually represents an end of game condition)
 MAX_HEURISTIC_SCORE = 2000000000
 MIN_HEURISTIC_SCORE = -2000000000
-
+num_evals_per_depth = 0
+"""TODO: change depth here"""
+best_move = None
 
 class UnitType(Enum):
     """Every unit type."""
@@ -368,9 +370,6 @@ def evaluate_e2(node) -> int:
     h_score = attack_unit_space_out - defender_unit_space_out
 
     return max(MIN_HEURISTIC_SCORE, min(h_score, MAX_HEURISTIC_SCORE))
-
-
-num_evals_per_depth = 0
 
 
 def minimax(node, depth, maximizing_player) -> Tuple[int, CoordPair, float]:
@@ -869,10 +868,10 @@ class Game:
 
         if(is_minimax):
             print("Minimax")
-            (score, move, depth) = minimax(self, 1, self.next_player is Player.Attacker)
+            (score, move, depth) = minimax(self, 2, self.next_player is Player.Attacker)
         else:
             print("Alpha-Beta")
-            (score, move, depth) = alphabeta(self, 1, float('-inf'), float('inf'), self.next_player is Player.Attacker)
+            (score, move, depth) = alphabeta(self, 2, float('-inf'), float('inf'), self.next_player is Player.Attacker)
         self.stats.evaluations_per_depth[depth] = num_evals_per_depth
 
         elapsed_seconds = (time.time() - start_time)
