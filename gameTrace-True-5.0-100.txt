@@ -16,8 +16,8 @@ C: dF9  .   .   .  aP9
 D:  .   .   .  aF9 aV9 
 E:  .   .  aP9 aV9 aA9 
 
-Heuristic score: -9999Evals per depth: 0:14
-Cumulative evals: 14Cumulative % evals by depth: 0:100.0 Eval perf.: 0.254490k/sElapsed time: 0.055012sComputer Attacker: move from C4 to B4
+Heuristic score: -9999Evals per depth: 0:3
+Cumulative evals: 3Cumulative % evals by depth: 0:100.0 Eval perf.: 0.003640k/sElapsed time: 0.824186sComputer Attacker: move from C4 to B4
 
 Next player: Defender
 Turns played: 1
@@ -31,7 +31,7 @@ D:  .   .   .  aF9 aV9
 E:  .   .  aP9 aV9 aA9 
 
 Heuristic score: 9999Evals per depth: 0:1
-Cumulative evals: 1Cumulative % evals by depth: 0:100.0 Eval perf.: 0.008263k/sElapsed time: 0.066014sComputer Defender: self-destruct at A0
+Cumulative evals: 1Cumulative % evals by depth: 0:100.0 Eval perf.: 0.001121k/sElapsed time: 0.068016sComputer Defender: self-destruct at A0
 self-destructed for 6 total damage
 
 Next player: Attacker
