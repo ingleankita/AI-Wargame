@@ -1007,7 +1007,7 @@ def main():
     print(f"Play mode: {game.options.game_type}")
     print(f"Heuristic: e0")
 
-    f = open("gameTrace-{}-{}-{}.txt".format(Options.alpha_beta, Options.max_time, Options.max_turns), "w")
+    f = open("gameTrace-{}-{}-{}.txt".format(options.alpha_beta, options.max_time, options.max_turns), "w")
     print(f"Max depth: {options.max_depth}", file=f)
     print(f"Max time (seconds): {options.max_time}", file=f)
     print(f"Maximum number of turns: {options.max_turns}", file=f)
